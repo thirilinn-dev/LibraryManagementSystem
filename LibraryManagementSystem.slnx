@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="LibraryManagementSystem.ConsoleApp/LibraryManagementSystem.ConsoleApp.csproj" />
+  <Project Path="LibraryManagementSystem.Database/LibraryManagementSystem.Database.csproj" Id="e514499e-c608-486a-913b-4a9fa3335153" />
+  <Project Path="LibraryManagementSystem.Domain/LibraryManagementSystem.Domain.csproj" Id="7d20ab6b-4587-4501-b23c-34e00a0d22b2" />
+  <Project Path="LibraryManagementSystem.WebApi/LibraryManagementSystem.WebApi.csproj" Id="5b7438aa-eb11-4186-bb66-0155f5126488" />
+</Solution>
