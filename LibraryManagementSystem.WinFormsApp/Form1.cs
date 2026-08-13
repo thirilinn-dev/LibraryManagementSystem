@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 using LibraryManagementSystem.WinFormsApp.Models;
 
 namespace LibraryManagementSystem.WinFormsApp;
@@ -11,6 +13,10 @@ namespace LibraryManagementSystem.WinFormsApp;
 public partial class Form1 : Form
 {
     private readonly HttpClient _client;
+    private int? _selectedBookId = null;
+    private int? _selectedBorrowerId = null;
+    private bool _isUpdatingSelection = false;
+    private List<BorrowerDto> _allBorrowers = new();
 
     public Form1()
     {
@@ -19,125 +25,73 @@ public partial class Form1 : Form
         _client = new HttpClient();
         _client.BaseAddress = new Uri("http://localhost:5288/");
 
-        // Setup Event Handlers
         this.Load += Form1_Load;
     }
 
     private async void Form1_Load(object? sender, EventArgs e)
     {
-        // Default to Dashboard
         SwitchTab(0);
-        await RefreshDashboardAsync();
+        await LoadBooksAsync();
     }
 
     private void SwitchTab(int index)
     {
         tabControlMain.SelectedIndex = index;
+
+        // Visual feedback for selected tab button
+        Color activeColor = Color.FromArgb(141, 110, 99);   // #8D6E63
+        Color inactiveColor = Color.FromArgb(121, 85, 72); // #795548
+
+        btnNavBooks.BackColor = index == 0 ? activeColor : inactiveColor;
+        btnNavBorrowers.BackColor = index == 1 ? activeColor : inactiveColor;
+        btnNavBorrowings.BackColor = index == 2 ? activeColor : inactiveColor;
+        btnNavOverdue.BackColor = index == 3 ? activeColor : inactiveColor;
     }
 
-    // Sidebar navigation clicks
-    private async void btnDashboard_Click(object? sender, EventArgs e)
+    // ==========================================
+    // Top Navigation Handlers
+    // ==========================================
+    private async void btnNavBooks_Click(object? sender, EventArgs e)
     {
         SwitchTab(0);
-        await RefreshDashboardAsync();
-    }
-
-    private async void btnBooks_Click(object? sender, EventArgs e)
-    {
-        SwitchTab(1);
         await LoadBooksAsync();
     }
 
-    private async void btnBorrowers_Click(object? sender, EventArgs e)
+    private async void btnNavBorrowers_Click(object? sender, EventArgs e)
     {
-        SwitchTab(2);
+        SwitchTab(1);
         await LoadBorrowersAsync();
     }
 
-    private async void btnBorrowing_Click(object? sender, EventArgs e)
+    private async void btnNavBorrowings_Click(object? sender, EventArgs e)
     {
-        SwitchTab(3);
+        SwitchTab(2);
         await PrepareLendFormAsync();
-    }
-
-    private async void btnReturns_Click(object? sender, EventArgs e)
-    {
-        SwitchTab(4);
         await LoadActiveBorrowingsAsync();
     }
 
-    private async void btnOverdue_Click(object? sender, EventArgs e)
+    private async void btnNavOverdue_Click(object? sender, EventArgs e)
     {
-        SwitchTab(5);
+        SwitchTab(3);
         await LoadOverdueBooksAsync();
     }
 
-    // 1. Dashboard Tab Methods
-    private async Task RefreshDashboardAsync()
+    // ==========================================
+    // 1. Books Management
+    // ==========================================
+    private async Task LoadBooksAsync(string? title = null)
     {
         try
         {
-            var dashboard = await _client.GetFromJsonAsync<DashboardDto>("api/Dashboard");
-            if (dashboard != null)
-            {
-                lblValTotalBooks.Text = dashboard.TotalBooks.ToString();
-                lblValAvailBooks.Text = dashboard.AvailableBooks.ToString();
-                lblValActiveBorrowings.Text = dashboard.ActiveBorrowings.ToString();
-                lblValOverdueBooks.Text = dashboard.OverdueBooks.ToString();
-                lblValRegisteredBorrowers.Text = dashboard.RegisteredBorrowers.ToString();
-
-                if (dashboard.OverdueBooks > 0)
-                {
-                    lblOverdueWarning.Text = $"⚠️ WARNING: There are {dashboard.OverdueBooks} overdue borrowings!";
-                    lblOverdueWarning.Visible = true;
-                }
-                else
-                {
-                    lblOverdueWarning.Visible = false;
-                }
-            }
-
-            // Load quick overdue list in dashboard grid
-            var overdueList = await _client.GetFromJsonAsync<List<BorrowingDto>>("api/Borrowing/overdue");
-            dgvDashboardOverdue.DataSource = overdueList;
-            if (dgvDashboardOverdue.Columns.Count > 0)
-            {
-                dgvDashboardOverdue.Columns["BorrowId"].HeaderText = "Borrow ID";
-                dgvDashboardOverdue.Columns["BorrowerId"].Visible = false;
-                dgvDashboardOverdue.Columns["BorrowerName"].HeaderText = "Borrower";
-                dgvDashboardOverdue.Columns["BookId"].Visible = false;
-                dgvDashboardOverdue.Columns["BookTitle"].HeaderText = "Book Title";
-                dgvDashboardOverdue.Columns["BorrowDate"].HeaderText = "Borrow Date";
-                dgvDashboardOverdue.Columns["DueDate"].HeaderText = "Due Date";
-                dgvDashboardOverdue.Columns["ReturnDate"].Visible = false;
-                dgvDashboardOverdue.Columns["Status"].HeaderText = "Status";
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Could not connect to Web API. Ensure it is running.\nDetails: {ex.Message}", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
-
-    // 2. Books Tab Methods
-    private async Task LoadBooksAsync(string? title = null, string? author = null, string? genre = null)
-    {
-        try
-        {
-            string url = $"api/Book?title={Uri.EscapeDataString(title ?? "")}&author={Uri.EscapeDataString(author ?? "")}&genre={Uri.EscapeDataString(genre ?? "")}";
+            string url = $"api/Book?title={Uri.EscapeDataString(title ?? "")}";
             var books = await _client.GetFromJsonAsync<List<BookDto>>(url);
+            
+            _isUpdatingSelection = true;
+            dgvBooks.DataSource = null;
             dgvBooks.DataSource = books;
-            if (dgvBooks.Columns.Count > 0)
-            {
-                dgvBooks.Columns["BookId"].HeaderText = "ID";
-                dgvBooks.Columns["Title"].HeaderText = "Title";
-                dgvBooks.Columns["Author"].HeaderText = "Author";
-                dgvBooks.Columns["Genre"].HeaderText = "Genre";
-                dgvBooks.Columns["Language"].HeaderText = "Language";
-                dgvBooks.Columns["Description"].HeaderText = "Description";
-                dgvBooks.Columns["TotalBooks"].HeaderText = "Total";
-                dgvBooks.Columns["AvailableBooks"].HeaderText = "Available";
-            }
+            SetupBookColumns();
+            ClearBookFields();
+            _isUpdatingSelection = false;
         }
         catch (Exception ex)
         {
@@ -145,89 +99,139 @@ public partial class Form1 : Form
         }
     }
 
-    private async void btnSearchBooks_Click(object? sender, EventArgs e)
+    private void SetupBookColumns()
     {
-        await LoadBooksAsync(txtSearchTitle.Text, txtSearchAuthor.Text, txtSearchGenre.Text);
+        if (dgvBooks.Columns.Count > 0)
+        {
+            dgvBooks.Columns["BookId"].HeaderText = "ID";
+            dgvBooks.Columns["Title"].HeaderText = "Title";
+            dgvBooks.Columns["Author"].HeaderText = "Author";
+            dgvBooks.Columns["Genre"].HeaderText = "Genre";
+            dgvBooks.Columns["Language"].HeaderText = "Language";
+            dgvBooks.Columns["Description"].HeaderText = "Description";
+            dgvBooks.Columns["TotalBooks"].HeaderText = "Total";
+            dgvBooks.Columns["AvailableBooks"].HeaderText = "Available";
+        }
     }
 
-    private async void btnClearSearch_Click(object? sender, EventArgs e)
+    private void dgvBooks_SelectionChanged(object? sender, EventArgs e)
     {
-        txtSearchTitle.Clear();
-        txtSearchAuthor.Clear();
-        txtSearchGenre.Clear();
+        if (_isUpdatingSelection) return;
+        if (dgvBooks.CurrentRow == null || dgvBooks.CurrentRow.DataBoundItem == null)
+        {
+            _selectedBookId = null;
+            return;
+        }
+
+        if (dgvBooks.CurrentRow.DataBoundItem is BookDto book)
+        {
+            _selectedBookId = book.BookId;
+            txtBookTitle.Text = book.Title;
+            txtBookAuthor.Text = book.Author;
+            txtBookGenre.Text = book.Genre;
+            txtBookLanguage.Text = book.Language;
+            txtBookDescription.Text = book.Description ?? "";
+            numBookTotalCopies.Value = book.TotalBooks;
+        }
+    }
+
+    private void ClearBookFields()
+    {
+        _selectedBookId = null;
+        txtBookTitle.Clear();
+        txtBookAuthor.Clear();
+        txtBookGenre.Clear();
+        txtBookLanguage.Clear();
+        txtBookDescription.Clear();
+        numBookTotalCopies.Value = 0;
+        
+        _isUpdatingSelection = true;
+        dgvBooks.ClearSelection();
+        _isUpdatingSelection = false;
+    }
+
+    private async void btnBookSearch_Click(object? sender, EventArgs e)
+    {
+        await LoadBooksAsync(txtBookSearch.Text);
+    }
+
+    private async void btnBookViewAll_Click(object? sender, EventArgs e)
+    {
+        txtBookSearch.Clear();
         await LoadBooksAsync();
     }
 
-    private async void btnAddBook_Click(object? sender, EventArgs e)
+    private async void btnBookCreate_Click(object? sender, EventArgs e)
     {
-        using var dlg = new BookDialog();
-        if (dlg.ShowDialog() == DialogResult.OK)
-        {
-            var dto = new CreateBookDto
-            {
-                Title = dlg.BookTitle,
-                Author = dlg.Author,
-                Genre = dlg.Genre,
-                Language = dlg.Language,
-                Description = string.IsNullOrWhiteSpace(dlg.Description) ? null : dlg.Description,
-                TotalBooks = dlg.TotalBooks
-            };
+        if (!ValidateBookInputs()) return;
 
-            var res = await _client.PostAsJsonAsync("api/Book", dto);
-            if (res.IsSuccessStatusCode)
-            {
-                MessageBox.Show("Book added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadBooksAsync();
-            }
-            else
-            {
-                string errMsg = await GetErrorMessage(res);
-                MessageBox.Show($"Failed to add book: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        var dto = new CreateBookDto
+        {
+            Title = txtBookTitle.Text.Trim(),
+            Author = txtBookAuthor.Text.Trim(),
+            Genre = txtBookGenre.Text.Trim(),
+            Language = txtBookLanguage.Text.Trim(),
+            Description = string.IsNullOrWhiteSpace(txtBookDescription.Text) ? null : txtBookDescription.Text.Trim(),
+            TotalBooks = (int)numBookTotalCopies.Value
+        };
+
+        var res = await _client.PostAsJsonAsync("api/Book", dto);
+        if (res.IsSuccessStatusCode)
+        {
+            MessageBox.Show("Book added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            await LoadBooksAsync();
+        }
+        else
+        {
+            string errMsg = await GetErrorMessage(res);
+            MessageBox.Show($"Failed to add book: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
-    private async void btnEditBook_Click(object? sender, EventArgs e)
+    private async void btnBookUpdate_Click(object? sender, EventArgs e)
     {
-        if (dgvBooks.CurrentRow == null) return;
-        var book = (BookDto)dgvBooks.CurrentRow.DataBoundItem;
-
-        using var dlg = new BookDialog(book);
-        if (dlg.ShowDialog() == DialogResult.OK)
+        if (_selectedBookId == null)
         {
-            var dto = new UpdateBookDto
-            {
-                Title = dlg.BookTitle,
-                Author = dlg.Author,
-                Genre = dlg.Genre,
-                Language = dlg.Language,
-                Description = string.IsNullOrWhiteSpace(dlg.Description) ? null : dlg.Description,
-                TotalBooks = dlg.TotalBooks
-            };
+            MessageBox.Show("Please select a book from the list to update.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        if (!ValidateBookInputs()) return;
 
-            var res = await _client.PatchAsJsonAsync($"api/Book/{book.BookId}", dto);
-            if (res.IsSuccessStatusCode)
-            {
-                MessageBox.Show("Book updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadBooksAsync();
-            }
-            else
-            {
-                string errMsg = await GetErrorMessage(res);
-                MessageBox.Show($"Failed to update book: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        var dto = new UpdateBookDto
+        {
+            Title = txtBookTitle.Text.Trim(),
+            Author = txtBookAuthor.Text.Trim(),
+            Genre = txtBookGenre.Text.Trim(),
+            Language = txtBookLanguage.Text.Trim(),
+            Description = string.IsNullOrWhiteSpace(txtBookDescription.Text) ? null : txtBookDescription.Text.Trim(),
+            TotalBooks = (int)numBookTotalCopies.Value
+        };
+
+        var res = await _client.PatchAsJsonAsync($"api/Book/{_selectedBookId}", dto);
+        if (res.IsSuccessStatusCode)
+        {
+            MessageBox.Show("Book updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            await LoadBooksAsync();
+        }
+        else
+        {
+            string errMsg = await GetErrorMessage(res);
+            MessageBox.Show($"Failed to update book: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
-    private async void btnDeleteBook_Click(object? sender, EventArgs e)
+    private async void btnBookDelete_Click(object? sender, EventArgs e)
     {
-        if (dgvBooks.CurrentRow == null) return;
-        var book = (BookDto)dgvBooks.CurrentRow.DataBoundItem;
+        if (_selectedBookId == null)
+        {
+            MessageBox.Show("Please select a book from the list to delete.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
 
-        var confirm = MessageBox.Show($"Are you sure you want to soft-delete '{book.Title}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        var confirm = MessageBox.Show($"Are you sure you want to soft-delete the book '{txtBookTitle.Text}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (confirm == DialogResult.Yes)
         {
-            var res = await _client.DeleteAsync($"api/Book/{book.BookId}");
+            var res = await _client.DeleteAsync($"api/Book/{_selectedBookId}");
             if (res.IsSuccessStatusCode)
             {
                 MessageBox.Show("Book soft-deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -241,20 +245,50 @@ public partial class Form1 : Form
         }
     }
 
-    // 3. Borrowers Tab Methods
+    private void btnBookClear_Click(object? sender, EventArgs e)
+    {
+        ClearBookFields();
+    }
+
+    private bool ValidateBookInputs()
+    {
+        if (string.IsNullOrWhiteSpace(txtBookTitle.Text))
+        {
+            MessageBox.Show("Title is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(txtBookAuthor.Text))
+        {
+            MessageBox.Show("Author is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(txtBookGenre.Text))
+        {
+            MessageBox.Show("Genre is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(txtBookLanguage.Text))
+        {
+            MessageBox.Show("Language is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        return true;
+    }
+
+    // ==========================================
+    // 2. Borrowers Management
+    // ==========================================
     private async Task LoadBorrowersAsync()
     {
         try
         {
             var borrowers = await _client.GetFromJsonAsync<List<BorrowerDto>>("api/Borrower");
-            dgvBorrowers.DataSource = borrowers;
-            if (dgvBorrowers.Columns.Count > 0)
-            {
-                dgvBorrowers.Columns["BorrowerId"].HeaderText = "ID";
-                dgvBorrowers.Columns["BorrowerName"].HeaderText = "Name";
-                dgvBorrowers.Columns["Phone"].HeaderText = "Phone";
-                dgvBorrowers.Columns["Email"].HeaderText = "Email";
-            }
+            _allBorrowers = borrowers ?? new List<BorrowerDto>();
+            
+            _isUpdatingSelection = true;
+            ApplyBorrowerFilter();
+            ClearBorrowerFields();
+            _isUpdatingSelection = false;
         }
         catch (Exception ex)
         {
@@ -262,70 +296,144 @@ public partial class Form1 : Form
         }
     }
 
-    private async void btnRegisterBorrower_Click(object? sender, EventArgs e)
+    private void ApplyBorrowerFilter()
     {
-        using var dlg = new BorrowerDialog();
-        if (dlg.ShowDialog() == DialogResult.OK)
+        string search = txtBorrowerSearch.Text.Trim().ToLower();
+        if (string.IsNullOrEmpty(search))
         {
-            var dto = new CreateBorrowerDto
-            {
-                BorrowerName = dlg.BorrowerName,
-                Phone = dlg.Phone,
-                Email = string.IsNullOrWhiteSpace(dlg.Email) ? null : dlg.Email
-            };
+            dgvBorrowers.DataSource = null;
+            dgvBorrowers.DataSource = _allBorrowers;
+        }
+        else
+        {
+            var filtered = _allBorrowers.Where(b => 
+                b.BorrowerName.ToLower().Contains(search) || 
+                b.Phone.Contains(search) || 
+                (b.Email ?? "").ToLower().Contains(search)
+            ).ToList();
+            dgvBorrowers.DataSource = null;
+            dgvBorrowers.DataSource = filtered;
+        }
+        SetupBorrowerColumns();
+    }
 
-            var res = await _client.PostAsJsonAsync("api/Borrower", dto);
-            if (res.IsSuccessStatusCode)
-            {
-                MessageBox.Show("Borrower registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadBorrowersAsync();
-            }
-            else
-            {
-                string errMsg = await GetErrorMessage(res);
-                MessageBox.Show($"Failed to register: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+    private void SetupBorrowerColumns()
+    {
+        if (dgvBorrowers.Columns.Count > 0)
+        {
+            dgvBorrowers.Columns["BorrowerId"].HeaderText = "ID";
+            dgvBorrowers.Columns["BorrowerName"].HeaderText = "Name";
+            dgvBorrowers.Columns["Phone"].HeaderText = "Phone";
+            dgvBorrowers.Columns["Email"].HeaderText = "Email";
         }
     }
 
-    private async void btnEditBorrower_Click(object? sender, EventArgs e)
+    private void dgvBorrowers_SelectionChanged(object? sender, EventArgs e)
     {
-        if (dgvBorrowers.CurrentRow == null) return;
-        var borrower = (BorrowerDto)dgvBorrowers.CurrentRow.DataBoundItem;
-
-        using var dlg = new BorrowerDialog(borrower);
-        if (dlg.ShowDialog() == DialogResult.OK)
+        if (_isUpdatingSelection) return;
+        if (dgvBorrowers.CurrentRow == null || dgvBorrowers.CurrentRow.DataBoundItem == null)
         {
-            var dto = new UpdateBorrowerDto
-            {
-                BorrowerName = dlg.BorrowerName,
-                Phone = dlg.Phone,
-                Email = string.IsNullOrWhiteSpace(dlg.Email) ? null : dlg.Email
-            };
+            _selectedBorrowerId = null;
+            return;
+        }
 
-            var res = await _client.PatchAsJsonAsync($"api/Borrower/{borrower.BorrowerId}", dto);
-            if (res.IsSuccessStatusCode)
-            {
-                MessageBox.Show("Borrower updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadBorrowersAsync();
-            }
-            else
-            {
-                string errMsg = await GetErrorMessage(res);
-                MessageBox.Show($"Failed to update: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        if (dgvBorrowers.CurrentRow.DataBoundItem is BorrowerDto borrower)
+        {
+            _selectedBorrowerId = borrower.BorrowerId;
+            txtBorrowerName.Text = borrower.BorrowerName;
+            txtBorrowerPhone.Text = borrower.Phone;
+            txtBorrowerEmail.Text = borrower.Email ?? "";
         }
     }
 
-    private async void btnDeleteBorrower_Click(object? sender, EventArgs e)
+    private void ClearBorrowerFields()
     {
-        if (dgvBorrowers.CurrentRow == null) return;
-        var borrower = (BorrowerDto)dgvBorrowers.CurrentRow.DataBoundItem;
+        _selectedBorrowerId = null;
+        txtBorrowerName.Clear();
+        txtBorrowerPhone.Clear();
+        txtBorrowerEmail.Clear();
 
-        var confirm = MessageBox.Show($"Are you sure you want to soft-delete '{borrower.BorrowerName}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        _isUpdatingSelection = true;
+        dgvBorrowers.ClearSelection();
+        _isUpdatingSelection = false;
+    }
+
+    private void btnBorrowerSearch_Click(object? sender, EventArgs e)
+    {
+        ApplyBorrowerFilter();
+    }
+
+    private void btnBorrowerViewAll_Click(object? sender, EventArgs e)
+    {
+        txtBorrowerSearch.Clear();
+        ApplyBorrowerFilter();
+    }
+
+    private async void btnBorrowerCreate_Click(object? sender, EventArgs e)
+    {
+        if (!ValidateBorrowerInputs()) return;
+
+        var dto = new CreateBorrowerDto
+        {
+            BorrowerName = txtBorrowerName.Text.Trim(),
+            Phone = txtBorrowerPhone.Text.Trim(),
+            Email = string.IsNullOrWhiteSpace(txtBorrowerEmail.Text) ? null : txtBorrowerEmail.Text.Trim()
+        };
+
+        var res = await _client.PostAsJsonAsync("api/Borrower", dto);
+        if (res.IsSuccessStatusCode)
+        {
+            MessageBox.Show("Borrower registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            await LoadBorrowersAsync();
+        }
+        else
+        {
+            string errMsg = await GetErrorMessage(res);
+            MessageBox.Show($"Failed to register borrower: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private async void btnBorrowerUpdate_Click(object? sender, EventArgs e)
+    {
+        if (_selectedBorrowerId == null)
+        {
+            MessageBox.Show("Please select a borrower from the list to update.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        if (!ValidateBorrowerInputs()) return;
+
+        var dto = new UpdateBorrowerDto
+        {
+            BorrowerName = txtBorrowerName.Text.Trim(),
+            Phone = txtBorrowerPhone.Text.Trim(),
+            Email = string.IsNullOrWhiteSpace(txtBorrowerEmail.Text) ? null : txtBorrowerEmail.Text.Trim()
+        };
+
+        var res = await _client.PatchAsJsonAsync($"api/Borrower/{_selectedBorrowerId}", dto);
+        if (res.IsSuccessStatusCode)
+        {
+            MessageBox.Show("Borrower updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            await LoadBorrowersAsync();
+        }
+        else
+        {
+            string errMsg = await GetErrorMessage(res);
+            MessageBox.Show($"Failed to update borrower: {errMsg}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private async void btnBorrowerDelete_Click(object? sender, EventArgs e)
+    {
+        if (_selectedBorrowerId == null)
+        {
+            MessageBox.Show("Please select a borrower from the list to delete.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var confirm = MessageBox.Show($"Are you sure you want to soft-delete borrower '{txtBorrowerName.Text}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (confirm == DialogResult.Yes)
         {
-            var res = await _client.DeleteAsync($"api/Borrower/{borrower.BorrowerId}");
+            var res = await _client.DeleteAsync($"api/Borrower/{_selectedBorrowerId}");
             if (res.IsSuccessStatusCode)
             {
                 MessageBox.Show("Borrower soft-deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -339,31 +447,53 @@ public partial class Form1 : Form
         }
     }
 
-    private void btnViewHistory_Click(object? sender, EventArgs e)
+    private void btnBorrowerClear_Click(object? sender, EventArgs e)
     {
-        if (dgvBorrowers.CurrentRow == null) return;
-        var borrower = (BorrowerDto)dgvBorrowers.CurrentRow.DataBoundItem;
+        ClearBorrowerFields();
+    }
 
-        using var dlg = new BorrowingHistoryDialog(borrower.BorrowerId, borrower.BorrowerName, _client);
+    private void btnBorrowerHistory_Click(object? sender, EventArgs e)
+    {
+        if (_selectedBorrowerId == null)
+        {
+            MessageBox.Show("Please select a borrower to view history.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        using var dlg = new BorrowingHistoryDialog(_selectedBorrowerId.Value, txtBorrowerName.Text, _client);
         dlg.ShowDialog();
     }
 
-    // 4. Lend Book (Borrowing) Tab Methods
+    private bool ValidateBorrowerInputs()
+    {
+        if (string.IsNullOrWhiteSpace(txtBorrowerName.Text))
+        {
+            MessageBox.Show("Borrower Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(txtBorrowerPhone.Text))
+        {
+            MessageBox.Show("Phone number is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+        return true;
+    }
+
+    // ==========================================
+    // 3. Borrowing & Returns
+    // ==========================================
     private async Task PrepareLendFormAsync()
     {
         try
         {
-            // Load borrowers for combobox
             var borrowers = await _client.GetFromJsonAsync<List<BorrowerDto>>("api/Borrower");
             cmbLendBorrower.DataSource = borrowers;
             cmbLendBorrower.DisplayMember = "BorrowerName";
             cmbLendBorrower.ValueMember = "BorrowerId";
 
-            // Load books for combobox
             var books = await _client.GetFromJsonAsync<List<BookDto>>("api/Book");
             var availableBooks = books?.FindAll(b => b.AvailableBooks > 0);
-            
-            // Format displays nicely
+
             List<KeyValuePair<int, string>> bookList = new();
             if (availableBooks != null)
             {
@@ -372,7 +502,7 @@ public partial class Form1 : Form
                     bookList.Add(new KeyValuePair<int, string>(b.BookId, $"{b.Title} (Available: {b.AvailableBooks})"));
                 }
             }
-            
+
             cmbLendBook.DataSource = bookList;
             cmbLendBook.DisplayMember = "Value";
             cmbLendBook.ValueMember = "Key";
@@ -383,6 +513,39 @@ public partial class Form1 : Form
         catch (Exception ex)
         {
             MessageBox.Show($"Error initializing lending form: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private async Task LoadActiveBorrowingsAsync()
+    {
+        try
+        {
+            var borrowings = await _client.GetFromJsonAsync<List<BorrowingDto>>("api/Borrowing");
+            var active = borrowings?.FindAll(b => b.ReturnDate == null);
+            
+            dgvReturns.DataSource = null;
+            dgvReturns.DataSource = active;
+            SetupReturnsColumns();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading active borrowings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void SetupReturnsColumns()
+    {
+        if (dgvReturns.Columns.Count > 0)
+        {
+            dgvReturns.Columns["BorrowId"].HeaderText = "Borrow ID";
+            dgvReturns.Columns["BorrowerId"].Visible = false;
+            dgvReturns.Columns["BorrowerName"].HeaderText = "Borrower";
+            dgvReturns.Columns["BookId"].Visible = false;
+            dgvReturns.Columns["BookTitle"].HeaderText = "Book Title";
+            dgvReturns.Columns["BorrowDate"].HeaderText = "Borrow Date";
+            dgvReturns.Columns["DueDate"].HeaderText = "Due Date";
+            dgvReturns.Columns["ReturnDate"].Visible = false;
+            dgvReturns.Columns["Status"].HeaderText = "Status";
         }
     }
 
@@ -416,7 +579,8 @@ public partial class Form1 : Form
         if (res.IsSuccessStatusCode)
         {
             MessageBox.Show("Book lent successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            await PrepareLendFormAsync(); // reload combobox counts
+            await PrepareLendFormAsync();
+            await LoadActiveBorrowingsAsync();
         }
         else
         {
@@ -425,39 +589,17 @@ public partial class Form1 : Form
         }
     }
 
-    // 5. Returns Tab Methods
-    private async Task LoadActiveBorrowingsAsync()
-    {
-        try
-        {
-            var borrowings = await _client.GetFromJsonAsync<List<BorrowingDto>>("api/Borrowing");
-            var active = borrowings?.FindAll(b => b.ReturnDate == null);
-            dgvReturns.DataSource = active;
-            if (dgvReturns.Columns.Count > 0)
-            {
-                dgvReturns.Columns["BorrowId"].HeaderText = "Borrow ID";
-                dgvReturns.Columns["BorrowerId"].Visible = false;
-                dgvReturns.Columns["BorrowerName"].HeaderText = "Borrower";
-                dgvReturns.Columns["BookId"].Visible = false;
-                dgvReturns.Columns["BookTitle"].HeaderText = "Book Title";
-                dgvReturns.Columns["BorrowDate"].HeaderText = "Borrow Date";
-                dgvReturns.Columns["DueDate"].HeaderText = "Due Date";
-                dgvReturns.Columns["ReturnDate"].Visible = false;
-                dgvReturns.Columns["Status"].HeaderText = "Status";
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error loading active borrowings: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
-
     private async void btnReturnBook_Click(object? sender, EventArgs e)
     {
-        if (dgvReturns.CurrentRow == null) return;
+        if (dgvReturns.CurrentRow == null || dgvReturns.CurrentRow.DataBoundItem == null)
+        {
+            MessageBox.Show("Please select an active borrowing record to return.", "Return Book", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        
         var borrowing = (BorrowingDto)dgvReturns.CurrentRow.DataBoundItem;
-
         var confirm = MessageBox.Show($"Are you sure you want to return book '{borrowing.BookTitle}' borrowed by '{borrowing.BorrowerName}'?", "Confirm Return", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        
         if (confirm == DialogResult.Yes)
         {
             var res = await _client.PostAsync($"api/Borrowing/{borrowing.BorrowId}/return", null);
@@ -474,38 +616,51 @@ public partial class Form1 : Form
         }
     }
 
-    // 6. Overdue Tab Methods
+    // ==========================================
+    // 4. Overdue Loans
+    // ==========================================
     private async Task LoadOverdueBooksAsync()
     {
         try
         {
             var overdue = await _client.GetFromJsonAsync<List<BorrowingDto>>("api/Borrowing/overdue");
+            dgvOverdue.DataSource = null;
             dgvOverdue.DataSource = overdue;
-            if (dgvOverdue.Columns.Count > 0)
-            {
-                dgvOverdue.Columns["BorrowId"].HeaderText = "Borrow ID";
-                dgvOverdue.Columns["BorrowerId"].Visible = false;
-                dgvOverdue.Columns["BorrowerName"].HeaderText = "Borrower";
-                dgvOverdue.Columns["BookId"].Visible = false;
-                dgvOverdue.Columns["BookTitle"].HeaderText = "Book Title";
-                dgvOverdue.Columns["BorrowDate"].HeaderText = "Borrow Date";
-                dgvOverdue.Columns["DueDate"].HeaderText = "Due Date";
-                dgvOverdue.Columns["ReturnDate"].Visible = false;
-                dgvOverdue.Columns["Status"].HeaderText = "Status";
-            }
+            SetupOverdueColumns();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error loading overdue: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error loading overdue loans: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void SetupOverdueColumns()
+    {
+        if (dgvOverdue.Columns.Count > 0)
+        {
+            dgvOverdue.Columns["BorrowId"].HeaderText = "Borrow ID";
+            dgvOverdue.Columns["BorrowerId"].Visible = false;
+            dgvOverdue.Columns["BorrowerName"].HeaderText = "Borrower";
+            dgvOverdue.Columns["BookId"].Visible = false;
+            dgvOverdue.Columns["BookTitle"].HeaderText = "Book Title";
+            dgvOverdue.Columns["BorrowDate"].HeaderText = "Borrow Date";
+            dgvOverdue.Columns["DueDate"].HeaderText = "Due Date";
+            dgvOverdue.Columns["ReturnDate"].Visible = false;
+            dgvOverdue.Columns["Status"].HeaderText = "Status";
         }
     }
 
     private async void btnReturnOverdueBook_Click(object? sender, EventArgs e)
     {
-        if (dgvOverdue.CurrentRow == null) return;
-        var borrowing = (BorrowingDto)dgvOverdue.CurrentRow.DataBoundItem;
+        if (dgvOverdue.CurrentRow == null || dgvOverdue.CurrentRow.DataBoundItem == null)
+        {
+            MessageBox.Show("Please select an overdue record to return.", "Return Book", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
 
+        var borrowing = (BorrowingDto)dgvOverdue.CurrentRow.DataBoundItem;
         var confirm = MessageBox.Show($"Are you sure you want to return overdue book '{borrowing.BookTitle}'?", "Confirm Return", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        
         if (confirm == DialogResult.Yes)
         {
             var res = await _client.PostAsync($"api/Borrowing/{borrowing.BorrowId}/return", null);
@@ -522,32 +677,9 @@ public partial class Form1 : Form
         }
     }
 
-    private async void btnRefreshOverdue_Click(object? sender, EventArgs e)
-    {
-        await LoadOverdueBooksAsync();
-    }
-
-    private async void btnRefreshReturns_Click(object? sender, EventArgs e)
-    {
-        await LoadActiveBorrowingsAsync();
-    }
-
-    private async void btnRefreshBooks_Click(object? sender, EventArgs e)
-    {
-        await LoadBooksAsync();
-    }
-
-    private async void btnRefreshBorrowers_Click(object? sender, EventArgs e)
-    {
-        await LoadBorrowersAsync();
-    }
-
-    private async void btnRefreshDashboard_Click(object? sender, EventArgs e)
-    {
-        await RefreshDashboardAsync();
-    }
-
-    // Error helper
+    // ==========================================
+    // Helpers
+    // ==========================================
     private async Task<string> GetErrorMessage(HttpResponseMessage response)
     {
         var errorContent = await response.Content.ReadAsStringAsync();

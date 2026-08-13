@@ -16,174 +16,160 @@ partial class Form1
         base.Dispose(disposing);
     }
 
-    // Sidebar
-    private Panel panelSidebar;
-    private Label lblBrand;
-    private Button btnDashboard;
-    private Button btnBooks;
-    private Button btnBorrowers;
-    private Button btnBorrowing;
-    private Button btnReturns;
-    private Button btnOverdue;
-
-    // Header
+    // Main Header & Nav
     private Panel panelHeader;
     private Label lblHeaderTitle;
+    private Label lblHeaderSubtitle;
+    private Panel panelNav;
+    private Button btnNavBooks;
+    private Button btnNavBorrowers;
+    private Button btnNavBorrowings;
+    private Button btnNavOverdue;
 
     // Tab Control
     private TabControl tabControlMain;
     
-    // Tab 1: Dashboard
-    private TabPage tabDashboard;
-    private Panel panelCardTotalBooks;
-    private Label lblValTotalBooks;
-    private Label lblTitleTotalBooks;
-    private Panel panelCardAvailBooks;
-    private Label lblValAvailBooks;
-    private Label lblTitleAvailBooks;
-    private Panel panelCardActiveBorrowings;
-    private Label lblValActiveBorrowings;
-    private Label lblTitleActiveBorrowings;
-    private Panel panelCardOverdueBooks;
-    private Label lblValOverdueBooks;
-    private Label lblTitleOverdueBooks;
-    private Panel panelCardRegisteredBorrowers;
-    private Label lblValRegisteredBorrowers;
-    private Label lblTitleRegisteredBorrowers;
-    private Label lblOverdueWarning;
-    private Label lblOverdueSectionTitle;
-    private DataGridView dgvDashboardOverdue;
-    private Button btnRefreshDashboard;
-
-    // Tab 2: Books
+    // Tab 1: Books
     private TabPage tabBooks;
+    private Panel panelBooksLeft;
+    private Label lblBookSearchHeader;
+    private TextBox txtBookSearch;
+    private Button btnBookSearch;
+    private Button btnBookViewAll;
+    private Label lblBookDetailsHeader;
+    private Label lblBookTitle;
+    private TextBox txtBookTitle;
+    private Label lblBookAuthor;
+    private TextBox txtBookAuthor;
+    private Label lblBookGenre;
+    private TextBox txtBookGenre;
+    private Label lblBookLanguage;
+    private TextBox txtBookLanguage;
+    private Label lblBookDescription;
+    private TextBox txtBookDescription;
+    private Label lblBookTotalCopies;
+    private NumericUpDown numBookTotalCopies;
+    private Button btnBookCreate;
+    private Button btnBookUpdate;
+    private Button btnBookDelete;
+    private Button btnBookClear;
     private DataGridView dgvBooks;
-    private TextBox txtSearchTitle;
-    private TextBox txtSearchAuthor;
-    private TextBox txtSearchGenre;
-    private Label lblSearchTitle;
-    private Label lblSearchAuthor;
-    private Label lblSearchGenre;
-    private Button btnSearchBooks;
-    private Button btnClearSearch;
-    private Button btnAddBook;
-    private Button btnEditBook;
-    private Button btnDeleteBook;
-    private Button btnRefreshBooks;
 
-    // Tab 3: Borrowers
+    // Tab 2: Borrowers
     private TabPage tabBorrowers;
+    private Panel panelBorrowersLeft;
+    private Label lblBorrowerSearchHeader;
+    private TextBox txtBorrowerSearch;
+    private Button btnBorrowerSearch;
+    private Button btnBorrowerViewAll;
+    private Label lblBorrowerDetailsHeader;
+    private Label lblBorrowerName;
+    private TextBox txtBorrowerName;
+    private Label lblBorrowerPhone;
+    private TextBox txtBorrowerPhone;
+    private Label lblBorrowerEmail;
+    private TextBox txtBorrowerEmail;
+    private Button btnBorrowerCreate;
+    private Button btnBorrowerUpdate;
+    private Button btnBorrowerDelete;
+    private Button btnBorrowerClear;
+    private Button btnBorrowerHistory;
     private DataGridView dgvBorrowers;
-    private Button btnRegisterBorrower;
-    private Button btnEditBorrower;
-    private Button btnDeleteBorrower;
-    private Button btnViewHistory;
-    private Button btnRefreshBorrowers;
 
-    // Tab 4: Lend Book
+    // Tab 3: Borrowings
     private TabPage tabBorrowing;
-    private ComboBox cmbLendBorrower;
-    private ComboBox cmbLendBook;
-    private DateTimePicker dtpLendBorrowDate;
-    private DateTimePicker dtpLendDueDate;
+    private Panel panelBorrowingLeft;
+    private Label lblLendHeader;
     private Label lblLendBorrower;
+    private ComboBox cmbLendBorrower;
     private Label lblLendBook;
+    private ComboBox cmbLendBook;
     private Label lblLendBorrowDate;
+    private DateTimePicker dtpLendBorrowDate;
     private Label lblLendDueDate;
+    private DateTimePicker dtpLendDueDate;
     private Button btnLendBook;
-
-    // Tab 5: Returns
-    private TabPage tabReturns;
     private DataGridView dgvReturns;
+    private Panel panelReturnsTop;
+    private Label lblActiveBorrowingsHeader;
     private Button btnReturnBook;
-    private Button btnRefreshReturns;
 
-    // Tab 6: Overdue
+    // Tab 4: Overdue
     private TabPage tabOverdue;
     private DataGridView dgvOverdue;
+    private Panel panelOverdueTop;
+    private Label lblOverdueHeader;
     private Button btnReturnOverdueBook;
-    private Button btnRefreshOverdue;
 
     private void InitializeComponent()
     {
-        this.panelSidebar = new Panel();
-        this.lblBrand = new Label();
-        this.btnDashboard = new Button();
-        this.btnBooks = new Button();
-        this.btnBorrowers = new Button();
-        this.btnBorrowing = new Button();
-        this.btnReturns = new Button();
-        this.btnOverdue = new Button();
-
         this.panelHeader = new Panel();
         this.lblHeaderTitle = new Label();
+        this.lblHeaderSubtitle = new Label();
+        this.panelNav = new Panel();
+        this.btnNavBooks = new Button();
+        this.btnNavBorrowers = new Button();
+        this.btnNavBorrowings = new Button();
+        this.btnNavOverdue = new Button();
 
         this.tabControlMain = new TabControl();
-
-        // Tabs
-        this.tabDashboard = new TabPage();
         this.tabBooks = new TabPage();
         this.tabBorrowers = new TabPage();
         this.tabBorrowing = new TabPage();
-        this.tabReturns = new TabPage();
         this.tabOverdue = new TabPage();
+
+        // Color Palette definitions
+        Color darkBrown = Color.FromArgb(93, 64, 55);      // #5D4037
+        Color mediumBrown = Color.FromArgb(121, 85, 72);    // #795548
+        Color accentBrown = Color.FromArgb(141, 110, 99);   // #8D6E63
+        Color lightBeige = Color.FromArgb(239, 235, 233);    // #EFEBE9
+        Color contentWhite = Color.White;
+        Color textPrimary = Color.FromArgb(62, 39, 35);     // #3E2723
+        Color textHeader = Color.White;
+        Color borderBrown = Color.FromArgb(188, 170, 164);   // #BCAAA4
+        Color selectBeige = Color.FromArgb(215, 204, 200);   // #D7CCC8
 
         this.SuspendLayout();
 
         // 
-        // panelSidebar
-        // 
-        this.panelSidebar.BackColor = Color.FromArgb(33, 37, 41);
-        this.panelSidebar.Dock = DockStyle.Left;
-        this.panelSidebar.Width = 220;
-        this.panelSidebar.Controls.Add(lblBrand);
-        this.panelSidebar.Controls.Add(btnDashboard);
-        this.panelSidebar.Controls.Add(btnBooks);
-        this.panelSidebar.Controls.Add(btnBorrowers);
-        this.panelSidebar.Controls.Add(btnBorrowing);
-        this.panelSidebar.Controls.Add(btnReturns);
-        this.panelSidebar.Controls.Add(btnOverdue);
-
-        // lblBrand
-        this.lblBrand.Text = "LIBRARIAN PORTAL";
-        this.lblBrand.ForeColor = Color.White;
-        this.lblBrand.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-        this.lblBrand.Location = new Point(10, 20);
-        this.lblBrand.Size = new Size(200, 30);
-        this.lblBrand.TextAlign = ContentAlignment.MiddleCenter;
-
-        // Navigation buttons
-        int btnY = 80, btnHeight = 45, btnGap = 10;
-
-        SetupSidebarButton(ref btnDashboard, "Dashboard", btnY);
-        SetupSidebarButton(ref btnBooks, "Books Catalog", btnY + (btnHeight + btnGap));
-        SetupSidebarButton(ref btnBorrowers, "Borrowers", btnY + (btnHeight + btnGap) * 2);
-        SetupSidebarButton(ref btnBorrowing, "Lend Book", btnY + (btnHeight + btnGap) * 3);
-        SetupSidebarButton(ref btnReturns, "Returns", btnY + (btnHeight + btnGap) * 4);
-        SetupSidebarButton(ref btnOverdue, "Overdue List", btnY + (btnHeight + btnGap) * 5);
-
-        // Sidebar clicks
-        this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);
-        this.btnBooks.Click += new System.EventHandler(this.btnBooks_Click);
-        this.btnBorrowers.Click += new System.EventHandler(this.btnBorrowers_Click);
-        this.btnBorrowing.Click += new System.EventHandler(this.btnBorrowing_Click);
-        this.btnReturns.Click += new System.EventHandler(this.btnReturns_Click);
-        this.btnOverdue.Click += new System.EventHandler(this.btnOverdue_Click);
-
-        // 
         // panelHeader
         // 
-        this.panelHeader.BackColor = Color.FromArgb(248, 249, 250);
+        this.panelHeader.BackColor = darkBrown;
         this.panelHeader.Dock = DockStyle.Top;
-        this.panelHeader.Height = 60;
-        this.panelHeader.Controls.Add(lblHeaderTitle);
+        this.panelHeader.Height = 75;
+        this.panelHeader.Controls.Add(this.lblHeaderTitle);
+        this.panelHeader.Controls.Add(this.lblHeaderSubtitle);
 
         // lblHeaderTitle
         this.lblHeaderTitle.Text = "Library Management System";
         this.lblHeaderTitle.Font = new Font("Segoe UI", 16, FontStyle.Bold);
-        this.lblHeaderTitle.ForeColor = Color.FromArgb(33, 37, 41);
-        this.lblHeaderTitle.Location = new Point(20, 15);
+        this.lblHeaderTitle.ForeColor = textHeader;
+        this.lblHeaderTitle.Location = new Point(20, 12);
         this.lblHeaderTitle.Size = new Size(500, 30);
+
+        // lblHeaderSubtitle
+        this.lblHeaderSubtitle.Text = "Manage Books, Borrowers and Borrowings";
+        this.lblHeaderSubtitle.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+        this.lblHeaderSubtitle.ForeColor = selectBeige;
+        this.lblHeaderSubtitle.Location = new Point(20, 42);
+        this.lblHeaderSubtitle.Size = new Size(500, 20);
+
+        // 
+        // panelNav
+        // 
+        this.panelNav.BackColor = mediumBrown;
+        this.panelNav.Dock = DockStyle.Top;
+        this.panelNav.Height = 45;
+        this.panelNav.Controls.Add(this.btnNavBooks);
+        this.panelNav.Controls.Add(this.btnNavBorrowers);
+        this.panelNav.Controls.Add(this.btnNavBorrowings);
+        this.panelNav.Controls.Add(this.btnNavOverdue);
+
+        // Nav Buttons
+        SetupNavButton(this.btnNavBooks, "📚 Books", 0, accentBrown);
+        SetupNavButton(this.btnNavBorrowers, "👤 Borrowers", 180, mediumBrown);
+        SetupNavButton(this.btnNavBorrowings, "📖 Borrowings", 360, mediumBrown);
+        SetupNavButton(this.btnNavOverdue, "⚠️ Overdue List", 540, mediumBrown);
 
         // 
         // tabControlMain
@@ -192,282 +178,345 @@ partial class Form1
         this.tabControlMain.Appearance = TabAppearance.FlatButtons;
         this.tabControlMain.ItemSize = new Size(0, 1);
         this.tabControlMain.SizeMode = TabSizeMode.Fixed;
-        this.tabControlMain.Controls.Add(tabDashboard);
-        this.tabControlMain.Controls.Add(tabBooks);
-        this.tabControlMain.Controls.Add(tabBorrowers);
-        this.tabControlMain.Controls.Add(tabBorrowing);
-        this.tabControlMain.Controls.Add(tabReturns);
-        this.tabControlMain.Controls.Add(tabOverdue);
+        this.tabControlMain.Controls.Add(this.tabBooks);
+        this.tabControlMain.Controls.Add(this.tabBorrowers);
+        this.tabControlMain.Controls.Add(this.tabBorrowing);
+        this.tabControlMain.Controls.Add(this.tabOverdue);
 
         // ==========================================
-        // TAB 1: Dashboard Layout
+        // TAB 1: Books Layout
         // ==========================================
-        tabDashboard.BackColor = Color.FromArgb(240, 242, 245);
+        this.tabBooks.BackColor = contentWhite;
         
-        int cardWidth = 160, cardHeight = 100, cardGap = 15, cardX = 20, cardY = 20;
+        // Left details panel
+        this.panelBooksLeft = new Panel();
+        this.panelBooksLeft.Dock = DockStyle.Left;
+        this.panelBooksLeft.Width = 350;
+        this.panelBooksLeft.BackColor = lightBeige;
+        this.panelBooksLeft.Padding = new Padding(15);
 
-        CreateMetricCard(ref panelCardTotalBooks, ref lblValTotalBooks, ref lblTitleTotalBooks, "Total Books", Color.FromArgb(13, 110, 253), cardX, cardY, cardWidth, cardHeight);
-        CreateMetricCard(ref panelCardAvailBooks, ref lblValAvailBooks, ref lblTitleAvailBooks, "Available", Color.FromArgb(25, 135, 84), cardX + (cardWidth + cardGap), cardY, cardWidth, cardHeight);
-        CreateMetricCard(ref panelCardActiveBorrowings, ref lblValActiveBorrowings, ref lblTitleActiveBorrowings, "Borrowed", Color.FromArgb(255, 193, 7), cardX + (cardWidth + cardGap) * 2, cardY, cardWidth, cardHeight);
-        CreateMetricCard(ref panelCardOverdueBooks, ref lblValOverdueBooks, ref lblTitleOverdueBooks, "Overdue", Color.FromArgb(220, 53, 69), cardX + (cardWidth + cardGap) * 3, cardY, cardWidth, cardHeight);
-        CreateMetricCard(ref panelCardRegisteredBorrowers, ref lblValRegisteredBorrowers, ref lblTitleRegisteredBorrowers, "Borrowers", Color.FromArgb(111, 66, 193), cardX + (cardWidth + cardGap) * 4, cardY, cardWidth, cardHeight);
+        // Book Search Section
+        this.lblBookSearchHeader = new Label { Text = "SEARCH BOOKS", Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = textPrimary, Location = new Point(15, 15), Size = new Size(320, 20) };
+        this.txtBookSearch = new TextBox { Location = new Point(15, 40), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+        this.btnBookSearch = new Button { Text = "Search", Location = new Point(15, 75), Size = new Size(150, 30), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBookViewAll = new Button { Text = "View All", Location = new Point(185, 75), Size = new Size(150, 30), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
 
-        // lblOverdueWarning
-        lblOverdueWarning = new Label();
-        lblOverdueWarning.Text = "";
-        lblOverdueWarning.Font = new Font("Segoe UI", 11, FontStyle.Bold);
-        lblOverdueWarning.ForeColor = Color.Red;
-        lblOverdueWarning.Location = new Point(20, 140);
-        lblOverdueWarning.Size = new Size(500, 25);
-        lblOverdueWarning.Visible = false;
+        this.btnBookSearch.FlatAppearance.BorderSize = 0;
+        this.btnBookViewAll.FlatAppearance.BorderSize = 0;
 
-        // Overdue list section title
-        lblOverdueSectionTitle = new Label();
-        lblOverdueSectionTitle.Text = "Overdue Loans Alert List:";
-        lblOverdueSectionTitle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        lblOverdueSectionTitle.ForeColor = Color.FromArgb(33, 37, 41);
-        lblOverdueSectionTitle.Location = new Point(20, 175);
-        lblOverdueSectionTitle.Size = new Size(300, 25);
+        // Divider
+        Label bookDivider = new Label { BorderStyle = BorderStyle.Fixed3D, Height = 2, Width = 320, Location = new Point(15, 120) };
 
-        // dgvDashboardOverdue
-        dgvDashboardOverdue = new DataGridView();
-        dgvDashboardOverdue.Location = new Point(20, 210);
-        dgvDashboardOverdue.Size = new Size(840, 320);
-        dgvDashboardOverdue.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-        dgvDashboardOverdue.AllowUserToAddRows = false;
-        dgvDashboardOverdue.AllowUserToDeleteRows = false;
-        dgvDashboardOverdue.ReadOnly = true;
-        dgvDashboardOverdue.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        dgvDashboardOverdue.BackgroundColor = Color.White;
-        dgvDashboardOverdue.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        // Book Details Header
+        this.lblBookDetailsHeader = new Label { Text = "BOOK DETAILS", Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = textPrimary, Location = new Point(15, 135), Size = new Size(320, 20) };
 
-        // btnRefreshDashboard
-        btnRefreshDashboard = new Button();
-        btnRefreshDashboard.Text = "Refresh Dashboard";
-        btnRefreshDashboard.Location = new Point(20, 545);
-        btnRefreshDashboard.Size = new Size(150, 35);
-        btnRefreshDashboard.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-        btnRefreshDashboard.Click += new System.EventHandler(this.btnRefreshDashboard_Click);
-        btnRefreshDashboard.FlatStyle = FlatStyle.Flat;
-        btnRefreshDashboard.BackColor = Color.FromArgb(33, 37, 41);
-        btnRefreshDashboard.ForeColor = Color.White;
+        // Fields
+        int bY = 165, bGap = 50;
+        this.lblBookTitle = new Label { Text = "Title:", ForeColor = textPrimary, Location = new Point(15, bY), AutoSize = true };
+        this.txtBookTitle = new TextBox { Location = new Point(15, bY + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
 
-        tabDashboard.Controls.Add(panelCardTotalBooks);
-        tabDashboard.Controls.Add(panelCardAvailBooks);
-        tabDashboard.Controls.Add(panelCardActiveBorrowings);
-        tabDashboard.Controls.Add(panelCardOverdueBooks);
-        tabDashboard.Controls.Add(panelCardRegisteredBorrowers);
-        tabDashboard.Controls.Add(lblOverdueWarning);
-        tabDashboard.Controls.Add(lblOverdueSectionTitle);
-        tabDashboard.Controls.Add(dgvDashboardOverdue);
-        tabDashboard.Controls.Add(btnRefreshDashboard);
+        this.lblBookAuthor = new Label { Text = "Author:", ForeColor = textPrimary, Location = new Point(15, bY + bGap), AutoSize = true };
+        this.txtBookAuthor = new TextBox { Location = new Point(15, bY + bGap + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+
+        this.lblBookGenre = new Label { Text = "Genre:", ForeColor = textPrimary, Location = new Point(15, bY + bGap * 2), AutoSize = true };
+        this.txtBookGenre = new TextBox { Location = new Point(15, bY + bGap * 2 + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+
+        this.lblBookLanguage = new Label { Text = "Language:", ForeColor = textPrimary, Location = new Point(15, bY + bGap * 3), AutoSize = true };
+        this.txtBookLanguage = new TextBox { Location = new Point(15, bY + bGap * 3 + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+
+        this.lblBookDescription = new Label { Text = "Description:", ForeColor = textPrimary, Location = new Point(15, bY + bGap * 4), AutoSize = true };
+        this.txtBookDescription = new TextBox { Location = new Point(15, bY + bGap * 4 + 18), Size = new Size(320, 50), Multiline = true, Font = new Font("Segoe UI", 9) };
+
+        this.lblBookTotalCopies = new Label { Text = "Total Copies:", ForeColor = textPrimary, Location = new Point(15, bY + bGap * 5 + 25), AutoSize = true };
+        this.numBookTotalCopies = new NumericUpDown { Location = new Point(120, bY + bGap * 5 + 23), Size = new Size(80, 25), Minimum = 0, Maximum = 1000, Font = new Font("Segoe UI", 10) };
+
+        // CRUD Action Buttons
+        int btnY = bY + bGap * 6 + 10;
+        this.btnBookCreate = new Button { Text = "Create", Location = new Point(15, btnY), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBookUpdate = new Button { Text = "Update", Location = new Point(185, btnY), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBookDelete = new Button { Text = "Delete", Location = new Point(15, btnY + 40), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(176, 58, 46), ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBookClear = new Button { Text = "Clear Fields", Location = new Point(185, btnY + 40), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+
+        this.btnBookCreate.FlatAppearance.BorderSize = 0;
+        this.btnBookUpdate.FlatAppearance.BorderSize = 0;
+        this.btnBookDelete.FlatAppearance.BorderSize = 0;
+        this.btnBookClear.FlatAppearance.BorderSize = 0;
+
+        this.panelBooksLeft.Controls.AddRange(new Control[] {
+            this.lblBookSearchHeader, this.txtBookSearch, this.btnBookSearch, this.btnBookViewAll,
+            bookDivider,
+            this.lblBookDetailsHeader,
+            this.lblBookTitle, this.txtBookTitle,
+            this.lblBookAuthor, this.txtBookAuthor,
+            this.lblBookGenre, this.txtBookGenre,
+            this.lblBookLanguage, this.txtBookLanguage,
+            this.lblBookDescription, this.txtBookDescription,
+            this.lblBookTotalCopies, this.numBookTotalCopies,
+            this.btnBookCreate, this.btnBookUpdate, this.btnBookDelete, this.btnBookClear
+        });
+
+        // Books DataGridView
+        this.dgvBooks = new DataGridView();
+        this.dgvBooks.Dock = DockStyle.Fill;
+        this.dgvBooks.BackgroundColor = contentWhite;
+        this.dgvBooks.BorderStyle = BorderStyle.None;
+        this.dgvBooks.GridColor = borderBrown;
+        this.dgvBooks.AllowUserToAddRows = false;
+        this.dgvBooks.AllowUserToDeleteRows = false;
+        this.dgvBooks.ReadOnly = true;
+        this.dgvBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.dgvBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        SetupDataGridViewTheme(this.dgvBooks, selectBeige, textPrimary, mediumBrown, borderBrown);
+
+        this.tabBooks.Controls.Add(this.dgvBooks);
+        this.tabBooks.Controls.Add(this.panelBooksLeft);
 
         // ==========================================
-        // TAB 2: Books Layout
+        // TAB 2: Borrowers Layout
         // ==========================================
-        tabBooks.BackColor = Color.White;
+        this.tabBorrowers.BackColor = contentWhite;
 
-        // Search Labels & Textboxes
-        lblSearchTitle = new Label { Text = "Title:", Location = new Point(20, 20), AutoSize = true };
-        txtSearchTitle = new TextBox { Location = new Point(70, 17), Size = new Size(130, 23) };
+        // Left details panel
+        this.panelBorrowersLeft = new Panel();
+        this.panelBorrowersLeft.Dock = DockStyle.Left;
+        this.panelBorrowersLeft.Width = 350;
+        this.panelBorrowersLeft.BackColor = lightBeige;
+        this.panelBorrowersLeft.Padding = new Padding(15);
 
-        lblSearchAuthor = new Label { Text = "Author:", Location = new Point(220, 20), AutoSize = true };
-        txtSearchAuthor = new TextBox { Location = new Point(280, 17), Size = new Size(130, 23) };
+        // Search Section
+        this.lblBorrowerSearchHeader = new Label { Text = "SEARCH BORROWERS", Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = textPrimary, Location = new Point(15, 15), Size = new Size(320, 20) };
+        this.txtBorrowerSearch = new TextBox { Location = new Point(15, 40), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+        this.btnBorrowerSearch = new Button { Text = "Search", Location = new Point(15, 75), Size = new Size(150, 30), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBorrowerViewAll = new Button { Text = "View All", Location = new Point(185, 75), Size = new Size(150, 30), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
 
-        lblSearchGenre = new Label { Text = "Genre:", Location = new Point(430, 20), AutoSize = true };
-        txtSearchGenre = new TextBox { Location = new Point(480, 17), Size = new Size(130, 23) };
+        this.btnBorrowerSearch.FlatAppearance.BorderSize = 0;
+        this.btnBorrowerViewAll.FlatAppearance.BorderSize = 0;
 
-        btnSearchBooks = new Button { Text = "Search", Location = new Point(630, 15), Size = new Size(80, 27), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(13, 110, 253), ForeColor = Color.White };
-        btnClearSearch = new Button { Text = "Clear", Location = new Point(720, 15), Size = new Size(80, 27), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(108, 117, 125), ForeColor = Color.White };
+        // Divider
+        Label borrowerDivider = new Label { BorderStyle = BorderStyle.Fixed3D, Height = 2, Width = 320, Location = new Point(15, 120) };
 
-        btnSearchBooks.Click += new System.EventHandler(this.btnSearchBooks_Click);
-        btnClearSearch.Click += new System.EventHandler(this.btnClearSearch_Click);
+        // Details Header
+        this.lblBorrowerDetailsHeader = new Label { Text = "BORROWER DETAILS", Font = new Font("Segoe UI", 10, FontStyle.Bold), ForeColor = textPrimary, Location = new Point(15, 135), Size = new Size(320, 20) };
 
-        // dgvBooks
-        dgvBooks = new DataGridView();
-        dgvBooks.Location = new Point(20, 60);
-        dgvBooks.Size = new Size(840, 450);
-        dgvBooks.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-        dgvBooks.AllowUserToAddRows = false;
-        dgvBooks.AllowUserToDeleteRows = false;
-        dgvBooks.ReadOnly = true;
-        dgvBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        dgvBooks.BackgroundColor = Color.White;
-        dgvBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        // Fields
+        int borY = 165, borGap = 55;
+        this.lblBorrowerName = new Label { Text = "Name:", ForeColor = textPrimary, Location = new Point(15, borY), AutoSize = true };
+        this.txtBorrowerName = new TextBox { Location = new Point(15, borY + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+
+        this.lblBorrowerPhone = new Label { Text = "Phone:", ForeColor = textPrimary, Location = new Point(15, borY + borGap), AutoSize = true };
+        this.txtBorrowerPhone = new TextBox { Location = new Point(15, borY + borGap + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
+
+        this.lblBorrowerEmail = new Label { Text = "Email:", ForeColor = textPrimary, Location = new Point(15, borY + borGap * 2), AutoSize = true };
+        this.txtBorrowerEmail = new TextBox { Location = new Point(15, borY + borGap * 2 + 18), Size = new Size(320, 25), Font = new Font("Segoe UI", 10) };
 
         // Action Buttons
-        btnAddBook = new Button { Text = "Add New Book", Location = new Point(20, 525), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(25, 135, 84), ForeColor = Color.White };
-        btnEditBook = new Button { Text = "Edit Selected", Location = new Point(150, 525), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(255, 193, 7), ForeColor = Color.Black };
-        btnDeleteBook = new Button { Text = "Delete Selected", Location = new Point(280, 525), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(220, 53, 69), ForeColor = Color.White };
-        btnRefreshBooks = new Button { Text = "Refresh", Location = new Point(410, 525), Size = new Size(100, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(33, 37, 41), ForeColor = Color.White };
+        int borBtnY = borY + borGap * 3 + 20;
+        this.btnBorrowerCreate = new Button { Text = "Create", Location = new Point(15, borBtnY), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBorrowerUpdate = new Button { Text = "Update", Location = new Point(185, borBtnY), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBorrowerDelete = new Button { Text = "Delete", Location = new Point(15, borBtnY + 40), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(176, 58, 46), ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBorrowerClear = new Button { Text = "Clear Fields", Location = new Point(185, borBtnY + 40), Size = new Size(150, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
+        this.btnBorrowerHistory = new Button { Text = "⌛ View Borrowing History", Location = new Point(15, borBtnY + 85), Size = new Size(320, 35), FlatStyle = FlatStyle.Flat, BackColor = mediumBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold) };
 
-        btnAddBook.Click += new System.EventHandler(this.btnAddBook_Click);
-        btnEditBook.Click += new System.EventHandler(this.btnEditBook_Click);
-        btnDeleteBook.Click += new System.EventHandler(this.btnDeleteBook_Click);
-        btnRefreshBooks.Click += new System.EventHandler(this.btnRefreshBooks_Click);
+        this.btnBorrowerCreate.FlatAppearance.BorderSize = 0;
+        this.btnBorrowerUpdate.FlatAppearance.BorderSize = 0;
+        this.btnBorrowerDelete.FlatAppearance.BorderSize = 0;
+        this.btnBorrowerClear.FlatAppearance.BorderSize = 0;
+        this.btnBorrowerHistory.FlatAppearance.BorderSize = 0;
 
-        tabBooks.Controls.AddRange(new Control[] { lblSearchTitle, txtSearchTitle, lblSearchAuthor, txtSearchAuthor, lblSearchGenre, txtSearchGenre, btnSearchBooks, btnClearSearch, dgvBooks, btnAddBook, btnEditBook, btnDeleteBook, btnRefreshBooks });
+        this.panelBorrowersLeft.Controls.AddRange(new Control[] {
+            this.lblBorrowerSearchHeader, this.txtBorrowerSearch, this.btnBorrowerSearch, this.btnBorrowerViewAll,
+            borrowerDivider,
+            this.lblBorrowerDetailsHeader,
+            this.lblBorrowerName, this.txtBorrowerName,
+            this.lblBorrowerPhone, this.txtBorrowerPhone,
+            this.lblBorrowerEmail, this.txtBorrowerEmail,
+            this.btnBorrowerCreate, this.btnBorrowerUpdate, this.btnBorrowerDelete, this.btnBorrowerClear, this.btnBorrowerHistory
+        });
 
-        // ==========================================
-        // TAB 3: Borrowers Layout
-        // ==========================================
-        tabBorrowers.BackColor = Color.White;
+        // Borrowers DataGridView
+        this.dgvBorrowers = new DataGridView();
+        this.dgvBorrowers.Dock = DockStyle.Fill;
+        this.dgvBorrowers.BackgroundColor = contentWhite;
+        this.dgvBorrowers.BorderStyle = BorderStyle.None;
+        this.dgvBorrowers.GridColor = borderBrown;
+        this.dgvBorrowers.AllowUserToAddRows = false;
+        this.dgvBorrowers.AllowUserToDeleteRows = false;
+        this.dgvBorrowers.ReadOnly = true;
+        this.dgvBorrowers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.dgvBorrowers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        SetupDataGridViewTheme(this.dgvBorrowers, selectBeige, textPrimary, mediumBrown, borderBrown);
 
-        dgvBorrowers = new DataGridView();
-        dgvBorrowers.Location = new Point(20, 20);
-        dgvBorrowers.Size = new Size(840, 480);
-        dgvBorrowers.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-        dgvBorrowers.AllowUserToAddRows = false;
-        dgvBorrowers.AllowUserToDeleteRows = false;
-        dgvBorrowers.ReadOnly = true;
-        dgvBorrowers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        dgvBorrowers.BackgroundColor = Color.White;
-        dgvBorrowers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-        btnRegisterBorrower = new Button { Text = "Register Borrower", Location = new Point(20, 515), Size = new Size(150, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(25, 135, 84), ForeColor = Color.White };
-        btnEditBorrower = new Button { Text = "Edit Selected", Location = new Point(180, 515), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(255, 193, 7), ForeColor = Color.Black };
-        btnDeleteBorrower = new Button { Text = "Delete Selected", Location = new Point(310, 515), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(220, 53, 69), ForeColor = Color.White };
-        btnViewHistory = new Button { Text = "Borrowing History", Location = new Point(440, 515), Size = new Size(150, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(13, 110, 253), ForeColor = Color.White };
-        btnRefreshBorrowers = new Button { Text = "Refresh", Location = new Point(600, 515), Size = new Size(100, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(33, 37, 41), ForeColor = Color.White };
-
-        btnRegisterBorrower.Click += new System.EventHandler(this.btnRegisterBorrower_Click);
-        btnEditBorrower.Click += new System.EventHandler(this.btnEditBorrower_Click);
-        btnDeleteBorrower.Click += new System.EventHandler(this.btnDeleteBorrower_Click);
-        btnViewHistory.Click += new System.EventHandler(this.btnViewHistory_Click);
-        btnRefreshBorrowers.Click += new System.EventHandler(this.btnRefreshBorrowers_Click);
-
-        tabBorrowers.Controls.AddRange(new Control[] { dgvBorrowers, btnRegisterBorrower, btnEditBorrower, btnDeleteBorrower, btnViewHistory, btnRefreshBorrowers });
+        this.tabBorrowers.Controls.Add(this.dgvBorrowers);
+        this.tabBorrowers.Controls.Add(this.panelBorrowersLeft);
 
         // ==========================================
-        // TAB 4: Lend Book (Borrowing)
+        // TAB 3: Borrowings Layout
         // ==========================================
-        tabBorrowing.BackColor = Color.White;
+        this.tabBorrowing.BackColor = contentWhite;
 
-        int formX = 40, formY = 40, fGap = 60, fInputX = 180, fWidth = 350;
+        // Left details panel
+        this.panelBorrowingLeft = new Panel();
+        this.panelBorrowingLeft.Dock = DockStyle.Left;
+        this.panelBorrowingLeft.Width = 350;
+        this.panelBorrowingLeft.BackColor = lightBeige;
+        this.panelBorrowingLeft.Padding = new Padding(15);
 
-        lblLendBorrower = new Label { Text = "Select Borrower:", Location = new Point(formX, formY), AutoSize = true, Font = new Font("Segoe UI", 11) };
-        cmbLendBorrower = new ComboBox { Location = new Point(fInputX, formY), Size = new Size(fWidth, 25), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 11) };
+        this.lblLendHeader = new Label { Text = "LEND A BOOK", Font = new Font("Segoe UI", 11, FontStyle.Bold), ForeColor = textPrimary, Location = new Point(15, 15), Size = new Size(320, 25) };
 
-        lblLendBook = new Label { Text = "Select Book:", Location = new Point(formX, formY + fGap), AutoSize = true, Font = new Font("Segoe UI", 11) };
-        cmbLendBook = new ComboBox { Location = new Point(fInputX, formY + fGap), Size = new Size(fWidth, 25), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 11) };
+        int lendY = 55, lendGap = 65;
+        this.lblLendBorrower = new Label { Text = "Select Borrower:", ForeColor = textPrimary, Location = new Point(15, lendY), AutoSize = true };
+        this.cmbLendBorrower = new ComboBox { Location = new Point(15, lendY + 18), Size = new Size(320, 25), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 10) };
 
-        lblLendBorrowDate = new Label { Text = "Borrow Date:", Location = new Point(formX, formY + fGap * 2), AutoSize = true, Font = new Font("Segoe UI", 11) };
-        dtpLendBorrowDate = new DateTimePicker { Location = new Point(fInputX, formY + fGap * 2), Size = new Size(200, 25), Format = DateTimePickerFormat.Short, Font = new Font("Segoe UI", 11) };
+        this.lblLendBook = new Label { Text = "Select Book:", ForeColor = textPrimary, Location = new Point(15, lendY + lendGap), AutoSize = true };
+        this.cmbLendBook = new ComboBox { Location = new Point(15, lendY + lendGap + 18), Size = new Size(320, 25), DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 10) };
 
-        lblLendDueDate = new Label { Text = "Due Date:", Location = new Point(formX, formY + fGap * 3), AutoSize = true, Font = new Font("Segoe UI", 11) };
-        dtpLendDueDate = new DateTimePicker { Location = new Point(fInputX, formY + fGap * 3), Size = new Size(200, 25), Format = DateTimePickerFormat.Short, Font = new Font("Segoe UI", 11) };
+        this.lblLendBorrowDate = new Label { Text = "Borrow Date:", ForeColor = textPrimary, Location = new Point(15, lendY + lendGap * 2), AutoSize = true };
+        this.dtpLendBorrowDate = new DateTimePicker { Location = new Point(15, lendY + lendGap * 2 + 18), Size = new Size(320, 25), Format = DateTimePickerFormat.Short, Font = new Font("Segoe UI", 10) };
 
-        btnLendBook = new Button { Text = "Lend Book", Location = new Point(fInputX, formY + fGap * 4), Size = new Size(180, 40), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(25, 135, 84), ForeColor = Color.White, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
-        btnLendBook.Click += new System.EventHandler(this.btnLendBook_Click);
+        this.lblLendDueDate = new Label { Text = "Due Date:", ForeColor = textPrimary, Location = new Point(15, lendY + lendGap * 3), AutoSize = true };
+        this.dtpLendDueDate = new DateTimePicker { Location = new Point(15, lendY + lendGap * 3 + 18), Size = new Size(320, 25), Format = DateTimePickerFormat.Short, Font = new Font("Segoe UI", 10) };
 
-        tabBorrowing.Controls.AddRange(new Control[] { lblLendBorrower, cmbLendBorrower, lblLendBook, cmbLendBook, lblLendBorrowDate, dtpLendBorrowDate, lblLendDueDate, dtpLendDueDate, btnLendBook });
+        this.btnLendBook = new Button { Text = "Lend Book", Location = new Point(15, lendY + lendGap * 4 + 10), Size = new Size(320, 40), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+        this.btnLendBook.FlatAppearance.BorderSize = 0;
+
+        this.panelBorrowingLeft.Controls.AddRange(new Control[] {
+            this.lblLendHeader,
+            this.lblLendBorrower, this.cmbLendBorrower,
+            this.lblLendBook, this.cmbLendBook,
+            this.lblLendBorrowDate, this.dtpLendBorrowDate,
+            this.lblLendDueDate, this.dtpLendDueDate,
+            this.btnLendBook
+        });
+
+        // Right Content: Active Borrowings & Return Book Action
+        this.panelReturnsTop = new Panel { Dock = DockStyle.Top, Height = 50, BackColor = contentWhite };
+        this.lblActiveBorrowingsHeader = new Label { Text = "ACTIVE BORROWINGS (NOT RETURNED)", Font = new Font("Segoe UI", 11, FontStyle.Bold), ForeColor = textPrimary, Location = new Point(15, 15), Size = new Size(400, 25) };
+        this.btnReturnBook = new Button { Text = "↩ Return Selected Book", Location = new Point(480, 10), Size = new Size(180, 32), FlatStyle = FlatStyle.Flat, BackColor = accentBrown, ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+        this.btnReturnBook.FlatAppearance.BorderSize = 0;
+        this.panelReturnsTop.Controls.Add(this.lblActiveBorrowingsHeader);
+        this.panelReturnsTop.Controls.Add(this.btnReturnBook);
+
+        this.dgvReturns = new DataGridView();
+        this.dgvReturns.Dock = DockStyle.Fill;
+        this.dgvReturns.BackgroundColor = contentWhite;
+        this.dgvReturns.BorderStyle = BorderStyle.None;
+        this.dgvReturns.GridColor = borderBrown;
+        this.dgvReturns.AllowUserToAddRows = false;
+        this.dgvReturns.AllowUserToDeleteRows = false;
+        this.dgvReturns.ReadOnly = true;
+        this.dgvReturns.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.dgvReturns.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        SetupDataGridViewTheme(this.dgvReturns, selectBeige, textPrimary, mediumBrown, borderBrown);
+
+        Panel panelBorrowingRight = new Panel { Dock = DockStyle.Fill };
+        panelBorrowingRight.Controls.Add(this.dgvReturns);
+        panelBorrowingRight.Controls.Add(this.panelReturnsTop);
+
+        this.tabBorrowing.Controls.Add(panelBorrowingRight);
+        this.tabBorrowing.Controls.Add(this.panelBorrowingLeft);
 
         // ==========================================
-        // TAB 5: Returns
+        // TAB 4: Overdue Layout
         // ==========================================
-        tabReturns.BackColor = Color.White;
+        this.tabOverdue.BackColor = contentWhite;
 
-        dgvReturns = new DataGridView();
-        dgvReturns.Location = new Point(20, 20);
-        dgvReturns.Size = new Size(840, 480);
-        dgvReturns.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-        dgvReturns.AllowUserToAddRows = false;
-        dgvReturns.AllowUserToDeleteRows = false;
-        dgvReturns.ReadOnly = true;
-        dgvReturns.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        dgvReturns.BackgroundColor = Color.White;
-        dgvReturns.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.panelOverdueTop = new Panel { Dock = DockStyle.Top, Height = 50, BackColor = contentWhite };
+        this.lblOverdueHeader = new Label { Text = "OVERDUE LOANS ALERT", Font = new Font("Segoe UI", 11, FontStyle.Bold), ForeColor = Color.FromArgb(176, 58, 46), Location = new Point(15, 15), Size = new Size(300, 25) };
+        this.btnReturnOverdueBook = new Button { Text = "↩ Return Overdue Book", Location = new Point(480, 10), Size = new Size(180, 32), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(176, 58, 46), ForeColor = textHeader, Font = new Font("Segoe UI", 9, FontStyle.Bold), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+        this.btnReturnOverdueBook.FlatAppearance.BorderSize = 0;
+        this.panelOverdueTop.Controls.Add(this.lblOverdueHeader);
+        this.panelOverdueTop.Controls.Add(this.btnReturnOverdueBook);
 
-        btnReturnBook = new Button { Text = "Return Selected Book", Location = new Point(20, 515), Size = new Size(180, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(13, 110, 253), ForeColor = Color.White };
-        btnRefreshReturns = new Button { Text = "Refresh List", Location = new Point(210, 515), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(33, 37, 41), ForeColor = Color.White };
+        this.dgvOverdue = new DataGridView();
+        this.dgvOverdue.Dock = DockStyle.Fill;
+        this.dgvOverdue.BackgroundColor = contentWhite;
+        this.dgvOverdue.BorderStyle = BorderStyle.None;
+        this.dgvOverdue.GridColor = borderBrown;
+        this.dgvOverdue.AllowUserToAddRows = false;
+        this.dgvOverdue.AllowUserToDeleteRows = false;
+        this.dgvOverdue.ReadOnly = true;
+        this.dgvOverdue.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.dgvOverdue.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        SetupDataGridViewTheme(this.dgvOverdue, selectBeige, textPrimary, mediumBrown, borderBrown);
 
-        btnReturnBook.Click += new System.EventHandler(this.btnReturnBook_Click);
-        btnRefreshReturns.Click += new System.EventHandler(this.btnRefreshReturns_Click);
-
-        tabReturns.Controls.AddRange(new Control[] { dgvReturns, btnReturnBook, btnRefreshReturns });
+        this.tabOverdue.Controls.Add(this.dgvOverdue);
+        this.tabOverdue.Controls.Add(this.panelOverdueTop);
 
         // ==========================================
-        // TAB 6: Overdue
+        // Event Subscriptions
         // ==========================================
-        tabOverdue.BackColor = Color.White;
+        this.btnNavBooks.Click += new System.EventHandler(this.btnNavBooks_Click);
+        this.btnNavBorrowers.Click += new System.EventHandler(this.btnNavBorrowers_Click);
+        this.btnNavBorrowings.Click += new System.EventHandler(this.btnNavBorrowings_Click);
+        this.btnNavOverdue.Click += new System.EventHandler(this.btnNavOverdue_Click);
 
-        dgvOverdue = new DataGridView();
-        dgvOverdue.Location = new Point(20, 20);
-        dgvOverdue.Size = new Size(840, 480);
-        dgvOverdue.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-        dgvOverdue.AllowUserToAddRows = false;
-        dgvOverdue.AllowUserToDeleteRows = false;
-        dgvOverdue.ReadOnly = true;
-        dgvOverdue.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        dgvOverdue.BackgroundColor = Color.White;
-        dgvOverdue.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        this.btnBookSearch.Click += new System.EventHandler(this.btnBookSearch_Click);
+        this.btnBookViewAll.Click += new System.EventHandler(this.btnBookViewAll_Click);
+        this.btnBookCreate.Click += new System.EventHandler(this.btnBookCreate_Click);
+        this.btnBookUpdate.Click += new System.EventHandler(this.btnBookUpdate_Click);
+        this.btnBookDelete.Click += new System.EventHandler(this.btnBookDelete_Click);
+        this.btnBookClear.Click += new System.EventHandler(this.btnBookClear_Click);
 
-        btnReturnOverdueBook = new Button { Text = "Return Overdue Book", Location = new Point(20, 515), Size = new Size(180, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(220, 53, 69), ForeColor = Color.White };
-        btnRefreshOverdue = new Button { Text = "Refresh List", Location = new Point(210, 515), Size = new Size(120, 35), Anchor = AnchorStyles.Bottom | AnchorStyles.Left, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(33, 37, 41), ForeColor = Color.White };
+        this.btnBorrowerSearch.Click += new System.EventHandler(this.btnBorrowerSearch_Click);
+        this.btnBorrowerViewAll.Click += new System.EventHandler(this.btnBorrowerViewAll_Click);
+        this.btnBorrowerCreate.Click += new System.EventHandler(this.btnBorrowerCreate_Click);
+        this.btnBorrowerUpdate.Click += new System.EventHandler(this.btnBorrowerUpdate_Click);
+        this.btnBorrowerDelete.Click += new System.EventHandler(this.btnBorrowerDelete_Click);
+        this.btnBorrowerClear.Click += new System.EventHandler(this.btnBorrowerClear_Click);
+        this.btnBorrowerHistory.Click += new System.EventHandler(this.btnBorrowerHistory_Click);
 
-        btnReturnOverdueBook.Click += new System.EventHandler(this.btnReturnOverdueBook_Click);
-        btnRefreshOverdue.Click += new System.EventHandler(this.btnRefreshOverdue_Click);
+        this.btnLendBook.Click += new System.EventHandler(this.btnLendBook_Click);
+        this.btnReturnBook.Click += new System.EventHandler(this.btnReturnBook_Click);
+        this.btnReturnOverdueBook.Click += new System.EventHandler(this.btnReturnOverdueBook_Click);
 
-        tabOverdue.Controls.AddRange(new Control[] { dgvOverdue, btnReturnOverdueBook, btnRefreshOverdue });
+        this.dgvBooks.SelectionChanged += new System.EventHandler(this.dgvBooks_SelectionChanged);
+        this.dgvBorrowers.SelectionChanged += new System.EventHandler(this.dgvBorrowers_SelectionChanged);
 
         // ==========================================
         // Main Form Configuration
         // ==========================================
         this.ClientSize = new Size(1120, 680);
-        this.Controls.Add(tabControlMain);
-        this.Controls.Add(panelHeader);
-        this.Controls.Add(panelSidebar);
+        this.Controls.Add(this.tabControlMain);
+        this.Controls.Add(this.panelNav);
+        this.Controls.Add(this.panelHeader);
         
         this.Text = "Library Management System";
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.MinimumSize = new Size(950, 600);
+        this.MinimumSize = new Size(1000, 650);
 
         this.ResumeLayout(false);
     }
 
-    private void SetupSidebarButton(ref Button btn, string text, int y)
+    private void SetupNavButton(Button btn, string text, int x, Color backColor)
     {
-        btn = new Button();
         btn.Text = text;
-        btn.Location = new Point(10, y);
-        btn.Size = new Size(200, 45);
+        btn.Location = new Point(x, 0);
+        btn.Size = new Size(180, 45);
         btn.FlatStyle = FlatStyle.Flat;
         btn.ForeColor = Color.White;
         btn.FlatAppearance.BorderSize = 0;
-        btn.Font = new Font("Segoe UI", 11, FontStyle.Regular);
-        btn.TextAlign = ContentAlignment.MiddleLeft;
-        btn.Padding = new Padding(15, 0, 0, 0);
+        btn.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+        btn.BackColor = backColor;
+        btn.TextAlign = ContentAlignment.MiddleCenter;
     }
 
-    private void CreateMetricCard(ref Panel panel, ref Label val, ref Label title, string titleText, Color valColor, int x, int y, int w, int h)
+    private void SetupDataGridViewTheme(DataGridView dgv, Color selectColor, Color textColor, Color headerColor, Color border)
     {
-        panel = new Panel();
-        panel.Location = new Point(x, y);
-        panel.Size = new Size(w, h);
-        panel.BackColor = Color.White;
-        panel.BorderStyle = BorderStyle.None;
+        dgv.EnableHeadersVisualStyles = false;
+        dgv.ColumnHeadersDefaultCellStyle.BackColor = headerColor;
+        dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+        dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+        dgv.ColumnHeadersHeight = 35;
 
-        // Custom borders using panels is a nice visual trick!
-        Panel borderPanel = new Panel();
-        borderPanel.Dock = DockStyle.Top;
-        borderPanel.Height = 4;
-        borderPanel.BackColor = valColor;
-        panel.Controls.Add(borderPanel);
+        dgv.DefaultCellStyle.BackColor = Color.White;
+        dgv.DefaultCellStyle.ForeColor = textColor;
+        dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10);
+        dgv.DefaultCellStyle.SelectionBackColor = selectColor;
+        dgv.DefaultCellStyle.SelectionForeColor = textColor;
 
-        val = new Label();
-        val.Text = "0";
-        val.Font = new Font("Segoe UI", 20, FontStyle.Bold);
-        val.ForeColor = valColor;
-        val.Location = new Point(15, 15);
-        val.Size = new Size(w - 30, 35);
-        panel.Controls.Add(val);
-
-        title = new Label();
-        title.Text = titleText;
-        title.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-        title.ForeColor = Color.Gray;
-        title.Location = new Point(15, 55);
-        title.Size = new Size(w - 30, 25);
-        panel.Controls.Add(title);
+        dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 246, 245);
+        dgv.RowHeadersVisible = false;
+        dgv.RowTemplate.Height = 30;
     }
 }
