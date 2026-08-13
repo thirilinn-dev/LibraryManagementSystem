@@ -1,249 +1,160 @@
-﻿using LibraryManagementSystem.Database.AppDbContextModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using LibraryManagementSystem.Database.AppDbContextModels;
+using LibraryManagementSystem.Domain.Models.Book;
 
-namespace LibraryManagementSystem.Domain.Features.Book
+namespace LibraryManagementSystem.Domain.Features.Book;
+
+public class BookService : IBookService
 {
-    internal class BookService
+    private readonly AppDbContext _context;
+
+    public BookService(AppDbContext context)
     {
-        private readonly AppDbContext _db;
+        _context = context;
+    }
 
-        public BookService()
+    public async Task<IEnumerable<BookDto>> GetBooksAsync(string? title = null, string? author = null, string? genre = null)
+    {
+        var query = _context.TblBooks.Where(b => !b.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(title))
         {
-            _db = new AppDbContext();
+            query = query.Where(b => b.Title.Contains(title));
         }
 
-        public BookListResponseModel GetBooks(BookListRequestModel requestModel)
+        if (!string.IsNullOrWhiteSpace(author))
         {
-            try
-            {
-                var lst = _db.Books.Where(b => !b.IsDeleted).ToList();
-                List<BookModel> books = new List<BookModel>();
-                foreach (var item in lst)
-                {
-                    books.Add(new BookModel
-                    {
-                        BookId = item.BookId,
-                        Title = item.Title,
-                        Author = item.Author,
-                        Genre = item.Genre,
-                        Description = item.Description,
-                        Price = item.Price,
-                        StockQuantity = item.StockQuantity,
-                        IsDeleted = item.IsDeleted
-                    });
-                }
-
-                return new BookListResponseModel
-                {
-                    isSuccess = true,
-                    Message = "Books fetched successfully",
-                    Data = books
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BookListResponseModel
-                {
-                    isSuccess = false,
-                    Message = "Failed to fetch books: " + ex.Message
-                };
-            }
+            query = query.Where(b => b.Author.Contains(author));
         }
 
-        public BookEditResponseModel GetBook(BookEditRequestModel requestModel)
+        if (!string.IsNullOrWhiteSpace(genre))
         {
-            try
-            {
-                var item = _db.Books.FirstOrDefault(x => x.BookId == requestModel.BookId && !x.IsDeleted);
-                if (item is null)
-                {
-                    return new BookEditResponseModel
-                    {
-                        isSuccess = false,
-                        Message = "Book is not found"
-                    };
-                }
-                return new BookEditResponseModel
-                {
-                    isSuccess = true,
-                    Message = "Book fetched successfully",
-                    Data = new BookModel
-                    {
-                        BookId = item.BookId,
-                        Title = item.Title,
-                        Author = item.Author,
-                        Genre = item.Genre,
-                        Description = item.Description,
-                        Price = item.Price,
-                        StockQuantity = item.StockQuantity,
-                        IsDeleted = item.IsDeleted
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BookEditResponseModel
-                {
-                    isSuccess = false,
-                    Message = "Failed to fetch book: " + ex.Message
-                };
-            }
+            query = query.Where(b => b.Genre.Contains(genre));
         }
 
-        public BookCreateResponseModel CreateBook(BookCreateRequestModel requestModel)
+        var books = await query.ToListAsync();
+
+        return books.Select(b => new BookDto
         {
-            try
-            {
-                if (requestModel.Price <= 0)
-                {
-                    return new BookCreateResponseModel
-                    {
-                        isSuccess = false,
-                        Message = "Price must be greater than 0."
-                    };
-                }
+            BookId = b.BookId,
+            Title = b.Title,
+            Author = b.Author,
+            Genre = b.Genre,
+            Language = b.Language,
+            Description = b.Description,
+            TotalBooks = b.TotalBooks,
+            AvailableBooks = b.AvailableBooks
+        });
+    }
 
-                var book = new Database.AppDbContextModels.Book
-                {
-                    Title = requestModel.Title,
-                    Author = requestModel.Author,
-                    Genre = requestModel.Genre,
-                    Description = requestModel.Description,
-                    Price = requestModel.Price,
-                    StockQuantity = requestModel.StockQuantity,
-                    IsDeleted = false,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
-                };
-                _db.Books.Add(book);
-                _db.SaveChanges();
+    public async Task<BookDto?> GetBookByIdAsync(int id)
+    {
+        var book = await _context.TblBooks
+            .FirstOrDefaultAsync(b => b.BookId == id && !b.IsDeleted);
 
-                return new BookCreateResponseModel
-                {
-                    isSuccess = true,
-                    Message = "Created new book successfully",
-                    Data = new BookModel
-                    {
-                        BookId = book.BookId,
-                        Title = book.Title,
-                        Author = book.Author,
-                        Genre = book.Genre,
-                        Description = book.Description,
-                        Price = book.Price,
-                        StockQuantity = book.StockQuantity,
-                        IsDeleted = book.IsDeleted
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BookCreateResponseModel
-                {
-                    isSuccess = false,
-                    Message = "Failed to create book: " + ex.Message
-                };
-            }
+        if (book == null) return null;
+
+        return new BookDto
+        {
+            BookId = book.BookId,
+            Title = book.Title,
+            Author = book.Author,
+            Genre = book.Genre,
+            Language = book.Language,
+            Description = book.Description,
+            TotalBooks = book.TotalBooks,
+            AvailableBooks = book.AvailableBooks
+        };
+    }
+
+    public async Task<BookDto> AddBookAsync(CreateBookDto dto)
+    {
+        var book = new TblBook
+        {
+            Title = dto.Title,
+            Author = dto.Author,
+            Genre = dto.Genre,
+            Language = dto.Language,
+            Description = dto.Description,
+            TotalBooks = dto.TotalBooks,
+            AvailableBooks = dto.TotalBooks,
+            IsDeleted = false
+        };
+
+        _context.TblBooks.Add(book);
+        await _context.SaveChangesAsync();
+
+        return new BookDto
+        {
+            BookId = book.BookId,
+            Title = book.Title,
+            Author = book.Author,
+            Genre = book.Genre,
+            Language = book.Language,
+            Description = book.Description,
+            TotalBooks = book.TotalBooks,
+            AvailableBooks = book.AvailableBooks
+        };
+    }
+
+    public async Task<BookDto?> UpdateBookAsync(int id, UpdateBookDto dto)
+    {
+        var book = await _context.TblBooks
+            .FirstOrDefaultAsync(b => b.BookId == id && !b.IsDeleted);
+
+        if (book == null) return null;
+
+        int difference = dto.TotalBooks - book.TotalBooks;
+        int newAvailable = book.AvailableBooks + difference;
+        if (newAvailable < 0)
+        {
+            throw new InvalidOperationException("Cannot reduce TotalBooks to a value less than the number of currently checked-out books.");
         }
 
-        public BookPatchResponseModel UpdateBook(BookPatchRequestModel requestModel)
+        book.Title = dto.Title;
+        book.Author = dto.Author;
+        book.Genre = dto.Genre;
+        book.Language = dto.Language;
+        book.Description = dto.Description;
+        book.TotalBooks = dto.TotalBooks;
+        book.AvailableBooks = newAvailable;
+
+        await _context.SaveChangesAsync();
+
+        return new BookDto
         {
-            try
-            {
-                var item = _db.Books.FirstOrDefault(x => x.BookId == requestModel.BookId && !x.IsDeleted);
-                if (item is null)
-                {
-                    return new BookPatchResponseModel
-                    {
-                        isSuccess = false,
-                        Message = "Book doesn't exist"
-                    };
-                }
+            BookId = book.BookId,
+            Title = book.Title,
+            Author = book.Author,
+            Genre = book.Genre,
+            Language = book.Language,
+            Description = book.Description,
+            TotalBooks = book.TotalBooks,
+            AvailableBooks = book.AvailableBooks
+        };
+    }
 
-                if (!string.IsNullOrEmpty(requestModel.Title)) item.Title = requestModel.Title;
-                if (!string.IsNullOrEmpty(requestModel.Author)) item.Author = requestModel.Author;
-                if (!string.IsNullOrEmpty(requestModel.Genre)) item.Genre = requestModel.Genre;
-                if (requestModel.Description != null) item.Description = requestModel.Description;
-                if (requestModel.Price.HasValue) item.Price = requestModel.Price.Value;
-                if (requestModel.StockQuantity.HasValue) item.StockQuantity = requestModel.StockQuantity.Value;
+    public async Task<bool> DeleteBookAsync(int id)
+    {
+        var book = await _context.TblBooks
+            .FirstOrDefaultAsync(b => b.BookId == id && !b.IsDeleted);
 
-                item.UpdatedAt = DateTime.Now;
-                _db.SaveChanges();
+        if (book == null) return false;
 
-                return new BookPatchResponseModel
-                {
-                    isSuccess = true,
-                    Message = "Updated book successfully",
-                    Data = new BookModel
-                    {
-                        BookId = item.BookId,
-                        Title = item.Title,
-                        Author = item.Author,
-                        Genre = item.Genre,
-                        Description = item.Description,
-                        Price = item.Price,
-                        StockQuantity = item.StockQuantity,
-                        IsDeleted = item.IsDeleted
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BookPatchResponseModel
-                {
-                    isSuccess = false,
-                    Message = "Failed to update book: " + ex.Message
-                };
-            }
+        bool hasActive = await _context.TblBorrowings
+            .AnyAsync(b => b.BookId == id && b.ReturnDate == null);
+
+        if (hasActive)
+        {
+            throw new InvalidOperationException("Cannot delete book with active borrowings.");
         }
 
-        public BookDeleteResponseModel DeleteBook(BookDeleteRequestModel requestModel)
-        {
-            try
-            {
-                var item = _db.Books.FirstOrDefault(x => x.BookId == requestModel.BookId);
-                if (item is null)
-                {
-                    return new BookDeleteResponseModel
-                    {
-                        isSuccess = false,
-                        Message = "Book is not found"
-                    };
-                }
-
-                // Soft delete
-                item.IsDeleted = true;
-                item.UpdatedAt = DateTime.Now;
-                _db.SaveChanges();
-
-                return new BookDeleteResponseModel
-                {
-                    isSuccess = true,
-                    Message = "Book is deleted successfully",
-                    Data = new BookModel
-                    {
-                        BookId = item.BookId,
-                        Title = item.Title,
-                        Author = item.Author,
-                        Genre = item.Genre,
-                        Description = item.Description,
-                        Price = item.Price,
-                        StockQuantity = item.StockQuantity,
-                        IsDeleted = item.IsDeleted
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BookDeleteResponseModel
-                {
-                    isSuccess = false,
-                    Message = "Failed to delete book: " + ex.Message
-                };
-            }
-        }
+        book.IsDeleted = true;
+        await _context.SaveChangesAsync();
+        return true;
     }
 }
