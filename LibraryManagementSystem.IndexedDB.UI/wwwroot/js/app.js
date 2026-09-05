@@ -57,7 +57,7 @@ class LibraryAppController {
             });
         });
 
-        // Sync Data Button
+        // Sync Data Button (optional — only if present in DOM)
         const btnSync = document.getElementById('btnSyncData');
         if (btnSync) {
             btnSync.addEventListener('click', () => this.syncData(false));
