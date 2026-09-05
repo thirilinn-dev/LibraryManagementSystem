@@ -1,8 +1,343 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Library Management System (IndexedDB UI)";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Header Bar -->
+<div class="library-header">
+    <div>
+        <h1>📖 Library Management System</h1>
+        <p>Manage Books, Borrowers, and Borrowings with IndexedDB Local Cache</p>
+    </div>
+    <div class="header-status-bar">
+        <div id="connectionStatusBadge" class="status-badge offline">
+            ○ Checking Connection...
+        </div>
+        <button id="btnSyncData" class="btn-sync" title="Synchronize SQL Server Web API data into local IndexedDB">
+            🔄 Sync Data
+        </button>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="library-tabs-container">
+    <ul class="library-tabs">
+        <li class="library-tab-item">
+            <button class="library-tab-btn active" data-tab="books">📚 Books</button>
+        </li>
+        <li class="library-tab-item">
+            <button class="library-tab-btn" data-tab="borrowers">👥 Borrowers</button>
+        </li>
+        <li class="library-tab-item">
+            <button class="library-tab-btn" data-tab="borrowings">📋 Borrowings</button>
+        </li>
+        <li class="library-tab-item">
+            <button class="library-tab-btn" data-tab="overdue">⚠️ Overdue Books</button>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-container">
+
+    <!-- ========================================================================= -->
+    <!-- 1. BOOKS TAB PANE                                                        -->
+    <!-- ========================================================================= -->
+    <div id="pane-books" class="tab-pane">
+        <div class="split-layout">
+
+            <!-- Left Panel: Search & Form Controls -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>Search & Details</span>
+                </div>
+
+                <!-- Fast IndexedDB Search -->
+                <div class="form-group mb-3">
+                    <label for="searchBookInput">Search Text (IndexedDB Local Search):</label>
+                    <div class="search-box-container">
+                        <input type="text" id="searchBookInput" class="form-control" placeholder="Title, Author, or Genre..." />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="btnSearchBooks" class="btn-brown-primary flex-fill">🔍 Search</button>
+                        <button id="btnViewAllBooks" class="btn-brown-outline flex-fill">View All</button>
+                    </div>
+                </div>
+
+                <hr class="my-3" style="border-color: var(--border-brown);" />
+
+                <div class="panel-header">
+                    <span>Book Details</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="bookTitle">Title *</label>
+                    <input type="text" id="bookTitle" class="form-control" placeholder="e.g. Clean Code" />
+                </div>
+
+                <div class="form-group">
+                    <label for="bookAuthor">Author *</label>
+                    <input type="text" id="bookAuthor" class="form-control" placeholder="e.g. Robert C. Martin" />
+                </div>
+
+                <div class="form-group">
+                    <label for="bookGenre">Genre *</label>
+                    <input type="text" id="bookGenre" class="form-control" placeholder="e.g. Programming" />
+                </div>
+
+                <div class="form-group">
+                    <label for="bookLanguage">Language</label>
+                    <input type="text" id="bookLanguage" class="form-control" placeholder="e.g. English" value="English" />
+                </div>
+
+                <div class="form-group">
+                    <label for="bookDescription">Description</label>
+                    <textarea id="bookDescription" class="form-control" placeholder="Brief synopsis..."></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 form-group">
+                        <label for="bookTotalBooks">Total Books *</label>
+                        <input type="number" id="bookTotalBooks" class="form-control" min="1" value="1" />
+                    </div>
+                    <div class="col-6 form-group">
+                        <label for="bookAvailableBooks">Available Books</label>
+                        <input type="number" id="bookAvailableBooks" class="form-control" readonly disabled value="1" />
+                    </div>
+                </div>
+
+                <div class="button-grid">
+                    <button id="btnCreateBook" class="btn-brown-primary">+ Create</button>
+                    <button id="btnUpdateBook" class="btn-brown-secondary">✎ Update</button>
+                    <button id="btnDeleteBook" class="btn-brown-danger">🗑 Delete</button>
+                    <button id="btnClearBookForm" class="btn-brown-outline">⌫ Clear</button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Books DataGrid Table -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>Books DataGrid (Loaded from IndexedDB)</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="library-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Genre</th>
+                                <th>Language</th>
+                                <th>Total</th>
+                                <th>Available</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                            <!-- Populated via JS from IndexedDB -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. BORROWERS TAB PANE                                                    -->
+    <!-- ========================================================================= -->
+    <div id="pane-borrowers" class="tab-pane" style="display: none;">
+        <div class="split-layout">
+
+            <!-- Left Panel: Borrower Details & Controls -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>Search & Details</span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="searchBorrowerInput">Search Borrower (IndexedDB Search):</label>
+                    <div class="search-box-container">
+                        <input type="text" id="searchBorrowerInput" class="form-control" placeholder="Name, Phone, or Email..." />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="btnSearchBorrowers" class="btn-brown-primary flex-fill">🔍 Search</button>
+                        <button id="btnViewAllBorrowers" class="btn-brown-outline flex-fill">View All</button>
+                    </div>
+                </div>
+
+                <hr class="my-3" style="border-color: var(--border-brown);" />
+
+                <div class="panel-header">
+                    <span>Borrower Details</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowerName">Borrower Name *</label>
+                    <input type="text" id="borrowerName" class="form-control" placeholder="e.g. John Doe" />
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowerPhone">Phone *</label>
+                    <input type="text" id="borrowerPhone" class="form-control" placeholder="e.g. 09123456789" />
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowerEmail">Email</label>
+                    <input type="email" id="borrowerEmail" class="form-control" placeholder="e.g. john@example.com" />
+                </div>
+
+                <div class="button-grid mb-2">
+                    <button id="btnCreateBorrower" class="btn-brown-primary">+ Create</button>
+                    <button id="btnUpdateBorrower" class="btn-brown-secondary">✎ Update</button>
+                    <button id="btnDeleteBorrower" class="btn-brown-danger">🗑 Delete</button>
+                    <button id="btnClearBorrowerForm" class="btn-brown-outline">⌫ Clear</button>
+                </div>
+
+                <button id="btnViewHistory" class="btn-brown-outline w-100 mt-2">📖 View Borrowing History</button>
+            </div>
+
+            <!-- Right Panel: Borrowers DataGrid Table -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>Borrowers DataGrid (Loaded from IndexedDB)</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="library-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="borrowersTableBody">
+                            <!-- Populated via JS from IndexedDB -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. BORROWINGS TAB PANE                                                   -->
+    <!-- ========================================================================= -->
+    <div id="pane-borrowings" class="tab-pane" style="display: none;">
+        <div class="split-layout">
+
+            <!-- Left Panel: Lend Book Form -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>Lend Book Form</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowingBorrowerSelect">Borrower *</label>
+                    <select id="borrowingBorrowerSelect" class="form-select">
+                        <option value="">-- Select Borrower --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowingBookSelect">Book (Available > 0) *</label>
+                    <select id="borrowingBookSelect" class="form-select">
+                        <option value="">-- Select Book --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowingBorrowDate">Borrow Date *</label>
+                    <input type="date" id="borrowingBorrowDate" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="borrowingDueDate">Due Date *</label>
+                    <input type="date" id="borrowingDueDate" class="form-control" />
+                </div>
+
+                <div class="button-grid">
+                    <button id="btnLendBook" class="btn-brown-primary">+ Lend Book</button>
+                    <button id="btnClearBorrowingForm" class="btn-brown-outline">⌫ Clear</button>
+                </div>
+
+                <hr class="my-3" style="border-color: var(--border-brown);" />
+
+                <button id="btnReturnBook" class="btn-brown-success w-100 py-2">
+                    ↩ Return Selected Book
+                </button>
+            </div>
+
+            <!-- Right Panel: Borrowings DataGrid Table -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>Borrowings Records (IndexedDB Cache)</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="library-table">
+                        <thead>
+                            <tr>
+                                <th>Borrower</th>
+                                <th>Book Title</th>
+                                <th>Borrow Date</th>
+                                <th>Due Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="borrowingsTableBody">
+                            <!-- Populated via JS from IndexedDB -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. OVERDUE BOOKS TAB PANE                                                -->
+    <!-- ========================================================================= -->
+    <div id="pane-overdue" class="tab-pane" style="display: none;">
+        <div class="panel-card">
+            <div class="panel-header">
+                <span>Overdue Books List (Calculated from IndexedDB Due Dates)</span>
+                <button id="btnRefreshOverdue" class="btn-brown-outline">🔄 Refresh</button>
+            </div>
+            <div class="table-responsive">
+                <table class="library-table">
+                    <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Book Title</th>
+                            <th>Borrow Date</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overdueTableBody">
+                        <!-- Populated via JS from IndexedDB -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Borrowing History Modal -->
+<div id="customModal" class="custom-modal-backdrop" style="display: none;">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <h5 id="modalTitle" class="m-0">Borrowing History</h5>
+            <button id="btnCloseModal" class="btn-close btn-close-white" aria-label="Close"></button>
+        </div>
+        <div id="modalBody" class="custom-modal-body">
+            <!-- Loaded via JS -->
+        </div>
+        <div class="custom-modal-footer">
+            <button onclick="window.appController.closeModal()" class="btn-brown-secondary">Close</button>
+        </div>
+    </div>
 </div>
