@@ -4,11 +4,13 @@
 
 <!-- Header Bar -->
 <div class="library-header">
-    <div>
-        <h1>📖 Library Management System</h1>
-        <p>Manage Books, Borrowers, and Borrowings with IndexedDB Local Cache</p>
+    <div class="header-brand">
+        <div class="header-title-group">
+            <h1>📖 Library Management System</h1>
+            <p>IndexedDB Browser Cache & Web API SQL Server Synchronization</p>
+        </div>
     </div>
-    <div class="header-status-bar">
+    <div class="header-actions">
         <div id="connectionStatusBadge" class="status-badge offline">
             ○ Checking Connection...
         </div>
@@ -47,27 +49,27 @@
 
             <!-- Left Panel: Search & Form Controls -->
             <div class="panel-card">
-                <div class="panel-header">
-                    <span>Search & Details</span>
+                <div class="panel-header-bar">
+                    <span class="panel-title">Search & Details</span>
+                    <!-- Top-Left / Header "+ Add Book" Style Button -->
+                    <button class="btn-add-item" onclick="window.appController.clearBookForm()">
+                        + Add Book
+                    </button>
                 </div>
 
                 <!-- Fast IndexedDB Search -->
                 <div class="form-group mb-3">
-                    <label for="searchBookInput">Search Text (IndexedDB Local Search):</label>
+                    <label for="searchBookInput">IndexedDB Local Search:</label>
                     <div class="search-box-container">
-                        <input type="text" id="searchBookInput" class="form-control" placeholder="Title, Author, or Genre..." />
+                        <input type="text" id="searchBookInput" class="form-control" placeholder="Search title, author, or genre..." />
                     </div>
                     <div class="d-flex gap-2">
-                        <button id="btnSearchBooks" class="btn-brown-primary flex-fill">🔍 Search</button>
-                        <button id="btnViewAllBooks" class="btn-brown-outline flex-fill">View All</button>
+                        <button id="btnSearchBooks" class="btn-modern-accent flex-fill">🔍 Search</button>
+                        <button id="btnViewAllBooks" class="btn-modern-outline flex-fill">View All</button>
                     </div>
                 </div>
 
-                <hr class="my-3" style="border-color: var(--border-brown);" />
-
-                <div class="panel-header">
-                    <span>Book Details</span>
-                </div>
+                <hr class="my-3" style="border-color: var(--border-color);" />
 
                 <div class="form-group">
                     <label for="bookTitle">Title *</label>
@@ -106,17 +108,17 @@
                 </div>
 
                 <div class="button-grid">
-                    <button id="btnCreateBook" class="btn-brown-primary">+ Create</button>
-                    <button id="btnUpdateBook" class="btn-brown-secondary">✎ Update</button>
-                    <button id="btnDeleteBook" class="btn-brown-danger">🗑 Delete</button>
-                    <button id="btnClearBookForm" class="btn-brown-outline">⌫ Clear</button>
+                    <button id="btnCreateBook" class="btn-modern-accent">+ Save Book</button>
+                    <button id="btnUpdateBook" class="btn-modern-primary">✎ Update</button>
+                    <button id="btnDeleteBook" class="btn-modern-danger">🗑 Delete</button>
+                    <button id="btnClearBookForm" class="btn-modern-outline">⌫ Clear</button>
                 </div>
             </div>
 
             <!-- Right Panel: Books DataGrid Table -->
             <div class="panel-card">
-                <div class="panel-header">
-                    <span>Books DataGrid (Loaded from IndexedDB)</span>
+                <div class="panel-header-bar">
+                    <span class="panel-title">Books DataGrid (IndexedDB Cache)</span>
                 </div>
                 <div class="table-responsive">
                     <table class="library-table">
@@ -148,26 +150,26 @@
 
             <!-- Left Panel: Borrower Details & Controls -->
             <div class="panel-card">
-                <div class="panel-header">
-                    <span>Search & Details</span>
+                <div class="panel-header-bar">
+                    <span class="panel-title">Search & Details</span>
+                    <!-- Top-Left / Header "+ Add Borrower" Style Button -->
+                    <button class="btn-add-item" onclick="window.appController.clearBorrowerForm()">
+                        + Add Borrower
+                    </button>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="searchBorrowerInput">Search Borrower (IndexedDB Search):</label>
+                    <label for="searchBorrowerInput">IndexedDB Borrower Search:</label>
                     <div class="search-box-container">
-                        <input type="text" id="searchBorrowerInput" class="form-control" placeholder="Name, Phone, or Email..." />
+                        <input type="text" id="searchBorrowerInput" class="form-control" placeholder="Search name, phone, or email..." />
                     </div>
                     <div class="d-flex gap-2">
-                        <button id="btnSearchBorrowers" class="btn-brown-primary flex-fill">🔍 Search</button>
-                        <button id="btnViewAllBorrowers" class="btn-brown-outline flex-fill">View All</button>
+                        <button id="btnSearchBorrowers" class="btn-modern-accent flex-fill">🔍 Search</button>
+                        <button id="btnViewAllBorrowers" class="btn-modern-outline flex-fill">View All</button>
                     </div>
                 </div>
 
-                <hr class="my-3" style="border-color: var(--border-brown);" />
-
-                <div class="panel-header">
-                    <span>Borrower Details</span>
-                </div>
+                <hr class="my-3" style="border-color: var(--border-color);" />
 
                 <div class="form-group">
                     <label for="borrowerName">Borrower Name *</label>
@@ -185,19 +187,19 @@
                 </div>
 
                 <div class="button-grid mb-2">
-                    <button id="btnCreateBorrower" class="btn-brown-primary">+ Create</button>
-                    <button id="btnUpdateBorrower" class="btn-brown-secondary">✎ Update</button>
-                    <button id="btnDeleteBorrower" class="btn-brown-danger">🗑 Delete</button>
-                    <button id="btnClearBorrowerForm" class="btn-brown-outline">⌫ Clear</button>
+                    <button id="btnCreateBorrower" class="btn-modern-accent">+ Save Borrower</button>
+                    <button id="btnUpdateBorrower" class="btn-modern-primary">✎ Update</button>
+                    <button id="btnDeleteBorrower" class="btn-modern-danger">🗑 Delete</button>
+                    <button id="btnClearBorrowerForm" class="btn-modern-outline">⌫ Clear</button>
                 </div>
 
-                <button id="btnViewHistory" class="btn-brown-outline w-100 mt-2">📖 View Borrowing History</button>
+                <button id="btnViewHistory" class="btn-modern-outline w-100 mt-2">📖 View Borrowing History</button>
             </div>
 
             <!-- Right Panel: Borrowers DataGrid Table -->
             <div class="panel-card">
-                <div class="panel-header">
-                    <span>Borrowers DataGrid (Loaded from IndexedDB)</span>
+                <div class="panel-header-bar">
+                    <span class="panel-title">Borrowers DataGrid (IndexedDB Cache)</span>
                 </div>
                 <div class="table-responsive">
                     <table class="library-table">
@@ -227,8 +229,12 @@
 
             <!-- Left Panel: Lend Book Form -->
             <div class="panel-card">
-                <div class="panel-header">
-                    <span>Lend Book Form</span>
+                <div class="panel-header-bar">
+                    <span class="panel-title">Lend Book Form</span>
+                    <!-- Top-Left / Header "+ Lend Book" Style Button -->
+                    <button class="btn-add-item" onclick="window.appController.clearBorrowingForm()">
+                        + New Loan
+                    </button>
                 </div>
 
                 <div class="form-group">
@@ -256,21 +262,21 @@
                 </div>
 
                 <div class="button-grid">
-                    <button id="btnLendBook" class="btn-brown-primary">+ Lend Book</button>
-                    <button id="btnClearBorrowingForm" class="btn-brown-outline">⌫ Clear</button>
+                    <button id="btnLendBook" class="btn-modern-accent">+ Lend Book</button>
+                    <button id="btnClearBorrowingForm" class="btn-modern-outline">⌫ Clear</button>
                 </div>
 
-                <hr class="my-3" style="border-color: var(--border-brown);" />
+                <hr class="my-3" style="border-color: var(--border-color);" />
 
-                <button id="btnReturnBook" class="btn-brown-success w-100 py-2">
+                <button id="btnReturnBook" class="btn-modern-success w-100 py-2">
                     ↩ Return Selected Book
                 </button>
             </div>
 
             <!-- Right Panel: Borrowings DataGrid Table -->
             <div class="panel-card">
-                <div class="panel-header">
-                    <span>Borrowings Records (IndexedDB Cache)</span>
+                <div class="panel-header-bar">
+                    <span class="panel-title">Borrowings Records (IndexedDB Cache)</span>
                 </div>
                 <div class="table-responsive">
                     <table class="library-table">
@@ -300,9 +306,9 @@
     <!-- ========================================================================= -->
     <div id="pane-overdue" class="tab-pane" style="display: none;">
         <div class="panel-card">
-            <div class="panel-header">
-                <span>Overdue Books List (Calculated from IndexedDB Due Dates)</span>
-                <button id="btnRefreshOverdue" class="btn-brown-outline">🔄 Refresh</button>
+            <div class="panel-header-bar">
+                <span class="panel-title">Overdue Books List (IndexedDB Analysis)</span>
+                <button id="btnRefreshOverdue" class="btn-modern-outline">🔄 Refresh</button>
             </div>
             <div class="table-responsive">
                 <table class="library-table">
@@ -337,7 +343,7 @@
             <!-- Loaded via JS -->
         </div>
         <div class="custom-modal-footer">
-            <button onclick="window.appController.closeModal()" class="btn-brown-secondary">Close</button>
+            <button onclick="window.appController.closeModal()" class="btn-modern-outline">Close</button>
         </div>
     </div>
 </div>
