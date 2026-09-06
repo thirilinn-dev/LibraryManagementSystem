@@ -55,100 +55,44 @@
     <!-- 1. BOOKS TAB PANE                                                        -->
     <!-- ========================================================================= -->
     <div id="pane-books" class="tab-pane">
-        <div class="split-layout">
+        <div class="panel-card">
+            <div class="panel-header-bar flex-wrap gap-2">
+                <span class="panel-title">📚 Books Management</span>
+                <button id="btnOpenAddBookModal" class="btn-modern-accent ms-auto">
+                    + Add Book
+                </button>
+            </div>
 
-            <!-- Left Panel: Search & Form Controls -->
-            <div class="panel-card">
-                <div class="panel-header-bar">
-                    <span class="panel-title">Search & Details</span>
-                    <!-- Top-Left / Header "+ Add Book" Style Button -->
-                    <button class="btn-add-item" onclick="window.appController.clearBookForm()">
-                        + Add Book
-                    </button>
-                </div>
-
-                <!-- Fast IndexedDB Search -->
-                <div class="form-group mb-3">
-                    <label for="searchBookInput">IndexedDB Local Search:</label>
-                    <div class="search-box-container">
+            <!-- Fast IndexedDB Search Bar -->
+            <div class="row align-items-center mb-3">
+                <div class="col-md-8 col-lg-6">
+                    <div class="search-box-container mb-0">
                         <input type="text" id="searchBookInput" class="form-control" placeholder="Search title, author, or genre..." />
+                        <button id="btnSearchBooks" class="btn-modern-accent">🔍 Search</button>
+                        <button id="btnViewAllBooks" class="btn-modern-outline">View All</button>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button id="btnSearchBooks" class="btn-modern-accent flex-fill">🔍 Search</button>
-                        <button id="btnViewAllBooks" class="btn-modern-outline flex-fill">View All</button>
-                    </div>
-                </div>
-
-                <hr class="my-3" style="border-color: var(--border-color);" />
-
-                <div class="form-group">
-                    <label for="bookTitle">Title *</label>
-                    <input type="text" id="bookTitle" class="form-control" placeholder="e.g. Clean Code" />
-                </div>
-
-                <div class="form-group">
-                    <label for="bookAuthor">Author *</label>
-                    <input type="text" id="bookAuthor" class="form-control" placeholder="e.g. Robert C. Martin" />
-                </div>
-
-                <div class="form-group">
-                    <label for="bookGenre">Genre *</label>
-                    <input type="text" id="bookGenre" class="form-control" placeholder="e.g. Programming" />
-                </div>
-
-                <div class="form-group">
-                    <label for="bookLanguage">Language</label>
-                    <input type="text" id="bookLanguage" class="form-control" placeholder="e.g. English" value="English" />
-                </div>
-
-                <div class="form-group">
-                    <label for="bookDescription">Description</label>
-                    <textarea id="bookDescription" class="form-control" placeholder="Brief synopsis..."></textarea>
-                </div>
-
-                <div class="row">
-                    <div class="col-6 form-group">
-                        <label for="bookTotalBooks">Total Books *</label>
-                        <input type="number" id="bookTotalBooks" class="form-control" min="1" value="1" />
-                    </div>
-                    <div class="col-6 form-group">
-                        <label for="bookAvailableBooks">Available Books</label>
-                        <input type="number" id="bookAvailableBooks" class="form-control" readonly disabled value="1" />
-                    </div>
-                </div>
-
-                <div class="button-grid">
-                    <button id="btnCreateBook" class="btn-modern-accent">+ Save Book</button>
-                    <button id="btnUpdateBook" class="btn-modern-primary">✎ Update</button>
-                    <button id="btnDeleteBook" class="btn-modern-danger">🗑 Delete</button>
-                    <button id="btnClearBookForm" class="btn-modern-outline">⌫ Clear</button>
                 </div>
             </div>
 
-            <!-- Right Panel: Books DataGrid Table -->
-            <div class="panel-card">
-                <div class="panel-header-bar">
-                    <span class="panel-title">Books DataGrid (IndexedDB Cache)</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="library-table">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Genre</th>
-                                <th>Language</th>
-                                <th>Total</th>
-                                <th>Available</th>
-                            </tr>
-                        </thead>
-                        <tbody id="booksTableBody">
-                            <!-- Populated via JS from IndexedDB -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Books DataGrid Table -->
+            <div class="table-responsive">
+                <table class="library-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Language</th>
+                            <th>Total</th>
+                            <th>Available</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booksTableBody">
+                        <!-- Populated via JS from IndexedDB -->
+                    </tbody>
+                </table>
             </div>
-
         </div>
     </div>
 
@@ -156,78 +100,41 @@
     <!-- 2. BORROWERS TAB PANE                                                    -->
     <!-- ========================================================================= -->
     <div id="pane-borrowers" class="tab-pane" style="display: none;">
-        <div class="split-layout">
+        <div class="panel-card">
+            <div class="panel-header-bar flex-wrap gap-2">
+                <span class="panel-title">👥 Borrowers Management</span>
+                <button id="btnOpenAddBorrowerModal" class="btn-modern-accent ms-auto">
+                    + Add Borrower
+                </button>
+            </div>
 
-            <!-- Left Panel: Borrower Details & Controls -->
-            <div class="panel-card">
-                <div class="panel-header-bar">
-                    <span class="panel-title">Search & Details</span>
-                    <!-- Top-Left / Header "+ Add Borrower" Style Button -->
-                    <button class="btn-add-item" onclick="window.appController.clearBorrowerForm()">
-                        + Add Borrower
-                    </button>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="searchBorrowerInput">IndexedDB Borrower Search:</label>
-                    <div class="search-box-container">
+            <!-- Fast IndexedDB Borrower Search -->
+            <div class="row align-items-center mb-3">
+                <div class="col-md-8 col-lg-6">
+                    <div class="search-box-container mb-0">
                         <input type="text" id="searchBorrowerInput" class="form-control" placeholder="Search name, phone, or email..." />
+                        <button id="btnSearchBorrowers" class="btn-modern-accent">🔍 Search</button>
+                        <button id="btnViewAllBorrowers" class="btn-modern-outline">View All</button>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button id="btnSearchBorrowers" class="btn-modern-accent flex-fill">🔍 Search</button>
-                        <button id="btnViewAllBorrowers" class="btn-modern-outline flex-fill">View All</button>
-                    </div>
-                </div>
-
-                <hr class="my-3" style="border-color: var(--border-color);" />
-
-                <div class="form-group">
-                    <label for="borrowerName">Borrower Name *</label>
-                    <input type="text" id="borrowerName" class="form-control" placeholder="e.g. John Doe" />
-                </div>
-
-                <div class="form-group">
-                    <label for="borrowerPhone">Phone *</label>
-                    <input type="text" id="borrowerPhone" class="form-control" placeholder="e.g. 09123456789" />
-                </div>
-
-                <div class="form-group">
-                    <label for="borrowerEmail">Email</label>
-                    <input type="email" id="borrowerEmail" class="form-control" placeholder="e.g. john@example.com" />
-                </div>
-
-                <div class="button-grid mb-2">
-                    <button id="btnCreateBorrower" class="btn-modern-accent">+ Save Borrower</button>
-                    <button id="btnUpdateBorrower" class="btn-modern-primary">✎ Update</button>
-                    <button id="btnDeleteBorrower" class="btn-modern-danger">🗑 Delete</button>
-                    <button id="btnClearBorrowerForm" class="btn-modern-outline">⌫ Clear</button>
-                </div>
-
-                <button id="btnViewHistory" class="btn-modern-outline w-100 mt-2">📖 View Borrowing History</button>
-            </div>
-
-            <!-- Right Panel: Borrowers DataGrid Table -->
-            <div class="panel-card">
-                <div class="panel-header-bar">
-                    <span class="panel-title">Borrowers DataGrid (IndexedDB Cache)</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="library-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="borrowersTableBody">
-                            <!-- Populated via JS from IndexedDB -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
+            <!-- Borrowers DataGrid Table -->
+            <div class="table-responsive">
+                <table class="library-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="borrowersTableBody">
+                        <!-- Populated via JS from IndexedDB -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -235,79 +142,33 @@
     <!-- 3. BORROWINGS TAB PANE                                                   -->
     <!-- ========================================================================= -->
     <div id="pane-borrowings" class="tab-pane" style="display: none;">
-        <div class="split-layout">
-
-            <!-- Left Panel: Lend Book Form -->
-            <div class="panel-card">
-                <div class="panel-header-bar">
-                    <span class="panel-title">Lend Book Form</span>
-                    <!-- Top-Left / Header "+ Lend Book" Style Button -->
-                    <button class="btn-add-item" onclick="window.appController.clearBorrowingForm()">
-                        + New Loan
-                    </button>
-                </div>
-
-                <div class="form-group">
-                    <label for="borrowingBorrowerSelect">Borrower *</label>
-                    <select id="borrowingBorrowerSelect" class="form-select">
-                        <option value="">-- Select Borrower --</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="borrowingBookSelect">Book (Available > 0) *</label>
-                    <select id="borrowingBookSelect" class="form-select">
-                        <option value="">-- Select Book --</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="borrowingBorrowDate">Borrow Date *</label>
-                    <input type="date" id="borrowingBorrowDate" class="form-control" />
-                </div>
-
-                <div class="form-group">
-                    <label for="borrowingDueDate">Due Date *</label>
-                    <input type="date" id="borrowingDueDate" class="form-control" />
-                </div>
-
-                <div class="button-grid">
-                    <button id="btnLendBook" class="btn-modern-accent">+ Lend Book</button>
-                    <button id="btnClearBorrowingForm" class="btn-modern-outline">⌫ Clear</button>
-                </div>
-
-                <hr class="my-3" style="border-color: var(--border-color);" />
-
-                <button id="btnReturnBook" class="btn-modern-success w-100 py-2">
-                    ↩ Return Selected Book
+        <div class="panel-card">
+            <div class="panel-header-bar flex-wrap gap-2">
+                <span class="panel-title">📋 Borrowings Records</span>
+                <button id="btnOpenLendModal" class="btn-modern-accent ms-auto">
+                    + Lend Book
                 </button>
             </div>
 
-            <!-- Right Panel: Borrowings DataGrid Table -->
-            <div class="panel-card">
-                <div class="panel-header-bar">
-                    <span class="panel-title">Borrowings Records (IndexedDB Cache)</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="library-table">
-                        <thead>
-                            <tr>
-                                <th>Borrower</th>
-                                <th>Book Title</th>
-                                <th>Borrow Date</th>
-                                <th>Due Date</th>
-                                <th>Return Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="borrowingsTableBody">
-                            <!-- Populated via JS from IndexedDB -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Borrowings DataGrid Table -->
+            <div class="table-responsive">
+                <table class="library-table">
+                    <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Book Title</th>
+                            <th>Borrow Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="borrowingsTableBody">
+                        <!-- Populated via JS from IndexedDB -->
+                    </tbody>
+                </table>
             </div>
-
         </div>
     </div>
 
@@ -343,11 +204,145 @@
     </div>
 </div>
 
-<!-- Borrowing History Modal -->
+<!-- ========================================================================= -->
+<!-- MODAL BOXES                                                               -->
+<!-- ========================================================================= -->
+
+<!-- 1. Book Modal -->
+<div id="bookModal" class="custom-modal-backdrop" style="display: none;">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <h5 id="bookModalTitle" class="m-0 fw-bold">Add New Book</h5>
+            <button id="btnCloseBookModal" class="btn-close btn-close-white" aria-label="Close"></button>
+        </div>
+        <div class="custom-modal-body">
+            <div class="form-group mb-3">
+                <label for="bookTitle" class="fw-semibold">Title *</label>
+                <input type="text" id="bookTitle" class="form-control" placeholder="e.g. Clean Code" />
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6 form-group">
+                    <label for="bookAuthor" class="fw-semibold">Author *</label>
+                    <input type="text" id="bookAuthor" class="form-control" placeholder="e.g. Robert C. Martin" />
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="bookGenre" class="fw-semibold">Genre *</label>
+                    <input type="text" id="bookGenre" class="form-control" placeholder="e.g. Programming" />
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="bookLanguage" class="fw-semibold">Language</label>
+                <input type="text" id="bookLanguage" class="form-control" placeholder="e.g. English" value="English" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="bookDescription" class="fw-semibold">Description</label>
+                <textarea id="bookDescription" class="form-control" rows="3" placeholder="Brief synopsis..."></textarea>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-6 form-group">
+                    <label for="bookTotalBooks" class="fw-semibold">Total Copies *</label>
+                    <input type="number" id="bookTotalBooks" class="form-control" min="1" value="1" />
+                </div>
+                <div class="col-6 form-group">
+                    <label for="bookAvailableBooks" class="fw-semibold">Available Copies</label>
+                    <input type="number" id="bookAvailableBooks" class="form-control" readonly disabled value="1" />
+                </div>
+            </div>
+        </div>
+        <div class="custom-modal-footer gap-2">
+            <button id="btnCreateBook" class="btn-modern-accent">+ Save Book</button>
+            <button id="btnUpdateBook" class="btn-modern-primary" style="display: none;">✎ Update</button>
+            <button id="btnDeleteBook" class="btn-modern-danger" style="display: none;">🗑 Delete</button>
+            <button id="btnClearBookForm" class="btn-modern-outline">⌫ Clear</button>
+            <button onclick="window.appController.closeBookModal()" class="btn-modern-outline">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Borrower Modal -->
+<div id="borrowerModal" class="custom-modal-backdrop" style="display: none;">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <h5 id="borrowerModalTitle" class="m-0 fw-bold">Add New Borrower</h5>
+            <button id="btnCloseBorrowerModal" class="btn-close btn-close-white" aria-label="Close"></button>
+        </div>
+        <div class="custom-modal-body">
+            <div class="form-group mb-3">
+                <label for="borrowerName" class="fw-semibold">Borrower Name *</label>
+                <input type="text" id="borrowerName" class="form-control" placeholder="e.g. John Doe" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="borrowerPhone" class="fw-semibold">Phone *</label>
+                <input type="text" id="borrowerPhone" class="form-control" placeholder="e.g. 09123456789" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="borrowerEmail" class="fw-semibold">Email</label>
+                <input type="email" id="borrowerEmail" class="form-control" placeholder="e.g. john@example.com" />
+            </div>
+        </div>
+        <div class="custom-modal-footer gap-2">
+            <button id="btnCreateBorrower" class="btn-modern-accent">+ Save Borrower</button>
+            <button id="btnUpdateBorrower" class="btn-modern-primary" style="display: none;">✎ Update</button>
+            <button id="btnDeleteBorrower" class="btn-modern-danger" style="display: none;">🗑 Delete</button>
+            <button id="btnViewHistory" class="btn-modern-outline" style="display: none;">📖 History</button>
+            <button id="btnClearBorrowerForm" class="btn-modern-outline">⌫ Clear</button>
+            <button onclick="window.appController.closeBorrowerModal()" class="btn-modern-outline">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Lend Book Modal -->
+<div id="lendBookModal" class="custom-modal-backdrop" style="display: none;">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <h5 id="lendModalTitle" class="m-0 fw-bold">Lend Book (New Loan)</h5>
+            <button id="btnCloseLendModal" class="btn-close btn-close-white" aria-label="Close"></button>
+        </div>
+        <div class="custom-modal-body">
+            <div class="form-group mb-3">
+                <label for="borrowingBorrowerSelect" class="fw-semibold">Borrower *</label>
+                <select id="borrowingBorrowerSelect" class="form-select">
+                    <option value="">-- Select Borrower --</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="borrowingBookSelect" class="fw-semibold">Book (Available > 0) *</label>
+                <select id="borrowingBookSelect" class="form-select">
+                    <option value="">-- Select Book --</option>
+                </select>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6 form-group">
+                    <label for="borrowingBorrowDate" class="fw-semibold">Borrow Date *</label>
+                    <input type="date" id="borrowingBorrowDate" class="form-control" />
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="borrowingDueDate" class="fw-semibold">Due Date *</label>
+                    <input type="date" id="borrowingDueDate" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="custom-modal-footer gap-2">
+            <button id="btnLendBook" class="btn-modern-accent">+ Issue Loan</button>
+            <button id="btnClearBorrowingForm" class="btn-modern-outline">⌫ Clear</button>
+            <button onclick="window.appController.closeLendModal()" class="btn-modern-outline">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Borrowing History Modal -->
 <div id="customModal" class="custom-modal-backdrop" style="display: none;">
     <div class="custom-modal">
         <div class="custom-modal-header">
-            <h5 id="modalTitle" class="m-0">Borrowing History</h5>
+            <h5 id="modalTitle" class="m-0 fw-bold">Borrowing History</h5>
             <button id="btnCloseModal" class="btn-close btn-close-white" aria-label="Close"></button>
         </div>
         <div id="modalBody" class="custom-modal-body">

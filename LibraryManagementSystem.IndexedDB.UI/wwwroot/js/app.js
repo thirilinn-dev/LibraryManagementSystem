@@ -64,14 +64,17 @@ class LibraryAppController {
         }
 
         // --- BOOKS EVENTS ---
+        document.getElementById('btnOpenAddBookModal')?.addEventListener('click', () => this.openBookModal(false));
         document.getElementById('btnSearchBooks')?.addEventListener('click', () => this.handleBookSearch());
         document.getElementById('btnViewAllBooks')?.addEventListener('click', () => this.handleBookViewAll());
         document.getElementById('btnCreateBook')?.addEventListener('click', () => this.handleCreateBook());
         document.getElementById('btnUpdateBook')?.addEventListener('click', () => this.handleUpdateBook());
         document.getElementById('btnDeleteBook')?.addEventListener('click', () => this.handleDeleteBook());
         document.getElementById('btnClearBookForm')?.addEventListener('click', () => this.clearBookForm());
+        document.getElementById('btnCloseBookModal')?.addEventListener('click', () => this.closeBookModal());
 
         // --- BORROWERS EVENTS ---
+        document.getElementById('btnOpenAddBorrowerModal')?.addEventListener('click', () => this.openBorrowerModal(false));
         document.getElementById('btnSearchBorrowers')?.addEventListener('click', () => this.handleBorrowerSearch());
         document.getElementById('btnViewAllBorrowers')?.addEventListener('click', () => this.handleBorrowerViewAll());
         document.getElementById('btnCreateBorrower')?.addEventListener('click', () => this.handleCreateBorrower());
@@ -79,16 +82,19 @@ class LibraryAppController {
         document.getElementById('btnDeleteBorrower')?.addEventListener('click', () => this.handleDeleteBorrower());
         document.getElementById('btnClearBorrowerForm')?.addEventListener('click', () => this.clearBorrowerForm());
         document.getElementById('btnViewHistory')?.addEventListener('click', () => this.handleViewHistory());
+        document.getElementById('btnCloseBorrowerModal')?.addEventListener('click', () => this.closeBorrowerModal());
 
         // --- BORROWINGS EVENTS ---
+        document.getElementById('btnOpenLendModal')?.addEventListener('click', () => this.openLendModal());
         document.getElementById('btnLendBook')?.addEventListener('click', () => this.handleLendBook());
         document.getElementById('btnReturnBook')?.addEventListener('click', () => this.handleReturnBook());
         document.getElementById('btnClearBorrowingForm')?.addEventListener('click', () => this.clearBorrowingForm());
+        document.getElementById('btnCloseLendModal')?.addEventListener('click', () => this.closeLendModal());
 
         // --- OVERDUE EVENTS ---
         document.getElementById('btnRefreshOverdue')?.addEventListener('click', () => this.renderOverdueTab());
 
-        // Close Modal Event
+        // Close History Modal Event
         document.getElementById('btnCloseModal')?.addEventListener('click', () => this.closeModal());
     }
 
@@ -189,8 +195,11 @@ class LibraryAppController {
                         ${book.AvailableBooks} / ${book.TotalBooks}
                     </span>
                 </td>
+                <td>
+                    <button class="btn btn-sm btn-modern-accent py-1 px-2">✎ Edit</button>
+                </td>
             `;
-            tr.addEventListener('click', () => this.selectBookRow(tr, book));
+            tr.addEventListener('click', () => this.openBookModal(true, book));
             tbody.appendChild(tr);
         });
     }
@@ -260,6 +269,7 @@ class LibraryAppController {
             await window.libraryDB.addBook(createdBook);
             // Refresh UI from IndexedDB
             this.clearBookForm();
+            this.closeBookModal();
             await this.renderBooksTab();
             this.showToast('Book created successfully.', 'success');
         } catch (err) {
@@ -291,6 +301,7 @@ class LibraryAppController {
             // API Success -> update IndexedDB!
             await window.libraryDB.updateBook(updatedBook);
             // Refresh UI from IndexedDB
+            this.closeBookModal();
             await this.renderBooksTab();
             this.showToast('Book updated successfully.', 'success');
         } catch (err) {
@@ -315,6 +326,7 @@ class LibraryAppController {
             // API Success -> remove from IndexedDB
             await window.libraryDB.deleteBook(this.selectedBookId);
             this.clearBookForm();
+            this.closeBookModal();
             await this.renderBooksTab();
             this.showToast('Book deleted successfully.', 'success');
         } catch (err) {
@@ -347,9 +359,12 @@ class LibraryAppController {
                 <td><strong>${this.escapeHtml(b.Name)}</strong></td>
                 <td>${this.escapeHtml(b.Phone)}</td>
                 <td>${this.escapeHtml(b.Email || '-')}</td>
-                <td><button class="btn btn-sm btn-brown-outline py-1 px-2" onclick="event.stopPropagation(); window.appController.openHistoryForBorrower(${b.BorrowerId}, '${this.escapeHtml(b.Name)}')">History</button></td>
+                <td>
+                    <button class="btn btn-sm btn-modern-outline py-1 px-2 me-1" onclick="event.stopPropagation(); window.appController.openHistoryForBorrower(${b.BorrowerId}, '${this.escapeHtml(b.Name)}')">📖 History</button>
+                    <button class="btn btn-sm btn-modern-accent py-1 px-2">✎ Edit</button>
+                </td>
             `;
-            tr.addEventListener('click', () => this.selectBorrowerRow(tr, b));
+            tr.addEventListener('click', () => this.openBorrowerModal(true, b));
             tbody.appendChild(tr);
         });
     }
@@ -403,6 +418,7 @@ class LibraryAppController {
             const created = await window.libraryApi.createBorrower(dto);
             await window.libraryDB.addBorrower(created);
             this.clearBorrowerForm();
+            this.closeBorrowerModal();
             await this.renderBorrowersTab();
             this.showToast('Borrower registered successfully.', 'success');
         } catch (err) {
@@ -428,6 +444,7 @@ class LibraryAppController {
         try {
             const updated = await window.libraryApi.updateBorrower(this.selectedBorrowerId, dto);
             await window.libraryDB.updateBorrower(updated);
+            this.closeBorrowerModal();
             await this.renderBorrowersTab();
             this.showToast('Borrower updated successfully.', 'success');
         } catch (err) {
@@ -450,6 +467,7 @@ class LibraryAppController {
             await window.libraryApi.deleteBorrower(this.selectedBorrowerId);
             await window.libraryDB.deleteBorrower(this.selectedBorrowerId);
             this.clearBorrowerForm();
+            this.closeBorrowerModal();
             await this.renderBorrowersTab();
             this.showToast('Borrower deleted successfully.', 'success');
         } catch (err) {
@@ -524,6 +542,61 @@ class LibraryAppController {
 
     closeModal() {
         document.getElementById('customModal').style.display = 'none';
+    }
+
+    // Modal control methods
+    openBookModal(isEdit = false, book = null) {
+        if (!isEdit || !book) {
+            this.clearBookForm();
+            if (document.getElementById('bookModalTitle')) document.getElementById('bookModalTitle').textContent = 'Add New Book';
+            if (document.getElementById('btnCreateBook')) document.getElementById('btnCreateBook').style.display = 'inline-flex';
+            if (document.getElementById('btnUpdateBook')) document.getElementById('btnUpdateBook').style.display = 'none';
+            if (document.getElementById('btnDeleteBook')) document.getElementById('btnDeleteBook').style.display = 'none';
+        } else {
+            this.selectBookRow(null, book);
+            if (document.getElementById('bookModalTitle')) document.getElementById('bookModalTitle').textContent = `Edit Book Details (${book.Title})`;
+            if (document.getElementById('btnCreateBook')) document.getElementById('btnCreateBook').style.display = 'none';
+            if (document.getElementById('btnUpdateBook')) document.getElementById('btnUpdateBook').style.display = 'inline-flex';
+            if (document.getElementById('btnDeleteBook')) document.getElementById('btnDeleteBook').style.display = 'inline-flex';
+        }
+        document.getElementById('bookModal').style.display = 'flex';
+    }
+
+    closeBookModal() {
+        document.getElementById('bookModal').style.display = 'none';
+    }
+
+    openBorrowerModal(isEdit = false, borrower = null) {
+        if (!isEdit || !borrower) {
+            this.clearBorrowerForm();
+            if (document.getElementById('borrowerModalTitle')) document.getElementById('borrowerModalTitle').textContent = 'Add New Borrower';
+            if (document.getElementById('btnCreateBorrower')) document.getElementById('btnCreateBorrower').style.display = 'inline-flex';
+            if (document.getElementById('btnUpdateBorrower')) document.getElementById('btnUpdateBorrower').style.display = 'none';
+            if (document.getElementById('btnDeleteBorrower')) document.getElementById('btnDeleteBorrower').style.display = 'none';
+            if (document.getElementById('btnViewHistory')) document.getElementById('btnViewHistory').style.display = 'none';
+        } else {
+            this.selectBorrowerRow(null, borrower);
+            if (document.getElementById('borrowerModalTitle')) document.getElementById('borrowerModalTitle').textContent = `Edit Borrower Details (${borrower.Name})`;
+            if (document.getElementById('btnCreateBorrower')) document.getElementById('btnCreateBorrower').style.display = 'none';
+            if (document.getElementById('btnUpdateBorrower')) document.getElementById('btnUpdateBorrower').style.display = 'inline-flex';
+            if (document.getElementById('btnDeleteBorrower')) document.getElementById('btnDeleteBorrower').style.display = 'inline-flex';
+            if (document.getElementById('btnViewHistory')) document.getElementById('btnViewHistory').style.display = 'inline-flex';
+        }
+        document.getElementById('borrowerModal').style.display = 'flex';
+    }
+
+    closeBorrowerModal() {
+        document.getElementById('borrowerModal').style.display = 'none';
+    }
+
+    async openLendModal() {
+        await this.renderBorrowingsTab();
+        this.clearBorrowingForm();
+        document.getElementById('lendBookModal').style.display = 'flex';
+    }
+
+    closeLendModal() {
+        document.getElementById('lendBookModal').style.display = 'none';
     }
 
     // ==========================================
@@ -646,6 +719,7 @@ class LibraryAppController {
             }
 
             this.clearBorrowingForm();
+            this.closeLendModal();
             await this.renderBorrowingsTab();
             this.showToast('Book lent successfully.', 'success');
         } catch (err) {
