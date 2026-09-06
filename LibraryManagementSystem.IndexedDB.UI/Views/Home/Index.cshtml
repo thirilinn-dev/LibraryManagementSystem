@@ -12,26 +12,44 @@
     </div>
 </div>
 
-<!-- Navigation Tabs -->
-<div class="library-tabs-container">
-    <ul class="library-tabs">
-        <li class="library-tab-item">
-            <button class="library-tab-btn active" data-tab="books">📚 Books</button>
-        </li>
-        <li class="library-tab-item">
-            <button class="library-tab-btn" data-tab="borrowers">👥 Borrowers</button>
-        </li>
-        <li class="library-tab-item">
-            <button class="library-tab-btn" data-tab="borrowings">📋 Borrowings</button>
-        </li>
-        <li class="library-tab-item">
-            <button class="library-tab-btn" data-tab="overdue">⚠️ Overdue Books</button>
-        </li>
-    </ul>
-</div>
+<!-- App Layout Container (Sidebar + Main Content Area) -->
+<div class="app-layout">
 
-<!-- Main Content Area -->
-<div class="main-container">
+    <!-- Vertical Navigation Sidebar -->
+    <aside class="library-sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Navigation</span>
+        </div>
+        <ul class="library-nav-list">
+            <li class="library-nav-item">
+                <button class="library-tab-btn active" data-tab="books">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">Books</span>
+                </button>
+            </li>
+            <li class="library-nav-item">
+                <button class="library-tab-btn" data-tab="borrowers">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">Borrowers</span>
+                </button>
+            </li>
+            <li class="library-nav-item">
+                <button class="library-tab-btn" data-tab="borrowings">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">Borrowings</span>
+                </button>
+            </li>
+            <li class="library-nav-item">
+                <button class="library-tab-btn" data-tab="overdue">
+                    <span class="nav-icon">⚠️</span>
+                    <span class="nav-label">Overdue Books</span>
+                </button>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
 
     <!-- ========================================================================= -->
     <!-- 1. BOOKS TAB PANE                                                        -->
@@ -322,6 +340,7 @@
         </div>
     </div>
 
+    </div>
 </div>
 
 <!-- Borrowing History Modal -->
